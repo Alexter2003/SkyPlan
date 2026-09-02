@@ -1,0 +1,43 @@
+/// SkyPlan's design system — single import for screens that consume the
+/// kit. See the `flutter-design-system` skill for usage rules.
+library;
+
+export 'components/buttons/sky_button.dart';
+export 'components/buttons/sky_icon_button.dart';
+export 'components/feedback/sky_badge.dart';
+export 'components/feedback/sky_bottom_sheet.dart';
+export 'components/feedback/sky_dialog.dart';
+export 'components/feedback/sky_empty_state.dart';
+export 'components/feedback/sky_progress_bar.dart';
+export 'components/feedback/sky_skeleton.dart';
+export 'components/feedback/sky_snackbar.dart';
+export 'components/inputs/sky_date_field.dart';
+export 'components/inputs/sky_dropdown.dart';
+export 'components/inputs/sky_email_field.dart';
+export 'components/inputs/sky_password_field.dart';
+export 'components/inputs/sky_search_field.dart';
+export 'components/inputs/sky_text_area.dart';
+export 'components/inputs/sky_text_field.dart';
+export 'components/inputs/sky_time_field.dart';
+export 'components/selection/sky_checkbox.dart';
+export 'components/selection/sky_chip.dart';
+export 'components/selection/sky_radio.dart';
+export 'components/selection/sky_segmented_control.dart';
+export 'components/selection/sky_toggle.dart';
+export 'components/sliders/sky_range_slider.dart';
+export 'components/sliders/sky_slider.dart';
+export 'components/surfaces/sky_background.dart';
+export 'components/surfaces/sky_card.dart';
+export 'components/surfaces/sky_divider.dart';
+export 'components/surfaces/sky_scaffold.dart';
+export 'components/weather/sky_status_indicator.dart';
+export 'components/weather/sky_weather_chip.dart';
+export 'icons/sky_icon.dart';
+export 'logo/sky_logo.dart';
+export 'theme/sky_theme.dart';
+export 'theme/sky_theme_context.dart';
+export 'tokens/sky_colors.dart';
+export 'tokens/sky_motion.dart';
+export 'tokens/sky_shapes.dart';
+export 'tokens/sky_spacing.dart';
+export 'tokens/sky_typography.dart';

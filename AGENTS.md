@@ -21,6 +21,7 @@ symlink for Claude Code). Load the relevant one before doing related work:
 |---|---|
 | [`git-workflow`](.agents/skills/git-workflow/SKILL.md) | Branch naming, commit format, PR requirements |
 | [`clean-architecture-flutter`](.agents/skills/clean-architecture-flutter/SKILL.md) | Where new code belongs, layering rules |
+| [`flutter-design-system`](.agents/skills/flutter-design-system/SKILL.md) | Design tokens, UI kit components, theming — before building/reviewing any screen |
 | [`project-requirements`](.agents/skills/project-requirements/SKILL.md) | Checklist to verify nothing from the rubric is missing |
 | [`flutter-expert`](.agents/skills/flutter-expert/SKILL.md) | General Flutter guidance |
 | [`dart-best-practices`](.agents/skills/dart-best-practices/SKILL.md) | Dart style/idioms |
@@ -34,13 +35,16 @@ symlink for Claude Code). Load the relevant one before doing related work:
    merged via Pull Request. See `git-workflow`.
 2. **Clean Architecture, feature-first.** `lib/features/<name>/{data,domain,presentation}`.
    `domain/` has no Flutter/package imports. See `clean-architecture-flutter`.
-3. **Every required item in `.agents/requirements/proyecto-final.md` must
+3. **Build UI from the design system, not raw Material/hard-coded styles.**
+   `lib/core/design_system/` (tokens, theme, components) is the only source
+   of colors, type, radii, spacing and motion. See `flutter-design-system`.
+4. **Every required item in `.agents/requirements/proyecto-final.md` must
    ship.** Extra/innovative features are welcome, but never at the cost of
    a missing requirement, and must be clearly labeled as extras in the PR.
    See `project-requirements`.
-4. **Code and commits in English**; comments only where the *why* isn't
+5. **Code and commits in English**; comments only where the *why* isn't
    obvious from the code.
-5. Run `flutter analyze` and `flutter test` before opening a PR.
+6. Run `flutter analyze` and `flutter test` before opening a PR.
 
 ## For humans
 
