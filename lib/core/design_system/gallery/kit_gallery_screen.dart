@@ -25,6 +25,8 @@ class _KitGalleryScreenState extends State<KitGalleryScreen> {
   TimeOfDay? _time;
   String? _dropdownValue = 'Antigua Guatemala';
   bool _loading = false;
+  int _fadeReplay = 0;
+  int _shakeReplay = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -168,6 +170,8 @@ class _KitGalleryScreenState extends State<KitGalleryScreen> {
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => _dropdownValue = v),
           ),
+          const SizedBox(height: SkySpacing.md),
+          const SkyCodeField(length: 5),
 
           _SectionTitle(
             'Selección',
@@ -306,6 +310,18 @@ class _KitGalleryScreenState extends State<KitGalleryScreen> {
             usage:
                 'ink/statusApt/statusPostpone (snackbar), surface (diálogo/sheet)',
           ),
+          const SkyInlineAlert(
+            message: 'Ya existe un usuario registrado con ese correo',
+            tone: SkyInlineAlertTone.error,
+          ),
+          const SizedBox(height: SkySpacing.xs),
+          SkyInlineAlert(
+            message: 'Debes confirmar tu correo antes de iniciar sesión',
+            tone: SkyInlineAlertTone.warning,
+            actionLabel: 'Confirmar ahora',
+            onAction: () {},
+          ),
+          const SizedBox(height: SkySpacing.sm),
           Wrap(
             spacing: SkySpacing.xs,
             children: [
@@ -345,6 +361,40 @@ class _KitGalleryScreenState extends State<KitGalleryScreen> {
                 ),
               ),
             ],
+          ),
+
+          _SectionTitle(
+            'Movimiento',
+            usage: 'SkyMotion.base/fast (duración), standard (curva)',
+          ),
+          Row(
+            children: [
+              SkyButton(
+                label: 'Reintentar entrada',
+                size: SkyButtonSize.sm,
+                variant: SkyButtonVariant.secondary,
+                onPressed: () => setState(() => _fadeReplay++),
+              ),
+              const SizedBox(width: SkySpacing.sm),
+              SkyButton(
+                label: 'Agitar',
+                size: SkyButtonSize.sm,
+                variant: SkyButtonVariant.secondary,
+                onPressed: () => setState(() => _shakeReplay++),
+              ),
+            ],
+          ),
+          const SizedBox(height: SkySpacing.sm),
+          KeyedSubtree(
+            key: ValueKey(_fadeReplay),
+            child: SkyFadeSlideIn(
+              child: SkyShake(
+                shakeKey: _shakeReplay,
+                child: const SkyCard(
+                  child: Text('Tarjeta de ejemplo con entrada animada'),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: SkySpacing.xxxl),
         ],

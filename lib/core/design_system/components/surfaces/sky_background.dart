@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import '../../painters/sky_grid_painter.dart';
 import '../../tokens/sky_colors.dart';
 
-/// Paints the screen's base background: solid [SkyColors.background] plus
-/// the subtle 24px retícula from the design canvas. Wrap screen content
-/// with this instead of setting `Scaffold.backgroundColor` directly when
-/// the grid texture should show through — [SkyScaffold] already does this.
+/// Fondo base de pantalla: color [SkyColors.background] + retícula.
 class SkyBackground extends StatelessWidget {
   const SkyBackground({super.key, required this.child, this.showGrid = true});
 
@@ -17,6 +14,9 @@ class SkyBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.skyColors;
     return Container(
+      // Ocupa toda la pantalla, sin importar el alto del contenido.
+      width: double.infinity,
+      height: double.infinity,
       color: colors.background,
       child: Stack(
         children: [

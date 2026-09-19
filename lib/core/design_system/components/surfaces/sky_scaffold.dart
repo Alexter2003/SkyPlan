@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../tokens/sky_colors.dart';
 import 'sky_background.dart';
 
 /// Standard screen shell: [Scaffold] over [SkyBackground], so every screen
@@ -28,7 +29,9 @@ class SkyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      // Sólido (no transparente): cubre también el área detrás del
+      // appBar, que SkyBackground no alcanza a pintar.
+      backgroundColor: context.skyColors.background,
       appBar: appBar,
       drawer: drawer,
       floatingActionButton: floatingActionButton,

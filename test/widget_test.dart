@@ -1,11 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sky_plan/core/design_system/theme/sky_theme_context.dart';
 import 'package:sky_plan/main.dart';
 
 void main() {
-  testWidgets('HomePage shows the SkyPlan wordmark', (
+  testWidgets('App boots to the login screen when there is no session', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -15,10 +14,12 @@ void main() {
       ),
     );
 
-    expect(find.text('SkyPlan'), findsOneWidget);
-    expect(
-      find.text(kDebugMode ? 'Ver UI kit (/kit)' : 'Hello SkyPlan'),
-      findsOneWidget,
-    );
+    // Avanza el reloj para superar el timeout del bootstrap de sesión.
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    expect(find.text('SkyPlan'), findsWidgets);
+    expect(find.text('Bienvenido de vuelta'), findsOneWidget);
   });
 }
