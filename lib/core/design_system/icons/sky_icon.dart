@@ -23,6 +23,11 @@ enum SkyIconType {
   eye,
   eyeOff,
   mail,
+  user,
+  lock,
+  arrowLeft,
+  refresh,
+  shieldCheck,
 }
 
 /// Renders one [SkyIconType] as a [CustomPaint]. Color defaults to the
@@ -202,6 +207,58 @@ class _SkyIconPainter extends CustomPainter {
           ..lineTo(12 * s, 13.5 * s)
           ..lineTo(21 * s, 6.5 * s);
         canvas.drawPath(flap, stroke);
+      case SkyIconType.user:
+        canvas.drawCircle(p(12, 8), 4 * s, stroke);
+        final path = Path()
+          ..moveTo(4 * s, 21 * s)
+          ..cubicTo(4 * s, 16.5 * s, 7.5 * s, 14 * s, 12 * s, 14 * s)
+          ..cubicTo(16.5 * s, 14 * s, 20 * s, 16.5 * s, 20 * s, 21 * s);
+        canvas.drawPath(path, stroke);
+      case SkyIconType.lock:
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(5 * s, 11 * s, 14 * s, 10 * s),
+            Radius.circular(2.5 * s),
+          ),
+          stroke,
+        );
+        final shackle = Path()
+          ..moveTo(8 * s, 11 * s)
+          ..lineTo(8 * s, 7.5 * s)
+          ..cubicTo(8 * s, 5 * s, 9.8 * s, 3 * s, 12 * s, 3 * s)
+          ..cubicTo(14.2 * s, 3 * s, 16 * s, 5 * s, 16 * s, 7.5 * s)
+          ..lineTo(16 * s, 11 * s);
+        canvas.drawPath(shackle, stroke);
+        canvas.drawCircle(p(12, 16), 1.2 * s, fill);
+      case SkyIconType.arrowLeft:
+        canvas.drawLine(p(20, 12), p(4, 12), stroke);
+        canvas.drawLine(p(4, 12), p(10, 6), stroke);
+        canvas.drawLine(p(4, 12), p(10, 18), stroke);
+      case SkyIconType.refresh:
+        canvas.drawArc(
+          Rect.fromCircle(center: p(12, 12), radius: 8 * s),
+          -math.pi * 0.85,
+          math.pi * 1.55,
+          false,
+          stroke,
+        );
+        canvas.drawLine(p(19.3, 5.3), p(19.3, 9.5), stroke);
+        canvas.drawLine(p(19.3, 9.5), p(15.3, 9.5), stroke);
+      case SkyIconType.shieldCheck:
+        final path = Path()
+          ..moveTo(12 * s, 2.5 * s)
+          ..lineTo(20 * s, 6 * s)
+          ..lineTo(20 * s, 12 * s)
+          ..cubicTo(20 * s, 17 * s, 16.5 * s, 20.2 * s, 12 * s, 21.5 * s)
+          ..cubicTo(7.5 * s, 20.2 * s, 4 * s, 17 * s, 4 * s, 12 * s)
+          ..lineTo(4 * s, 6 * s)
+          ..close();
+        canvas.drawPath(path, stroke);
+        final check = Path()
+          ..moveTo(8.3 * s, 12.3 * s)
+          ..lineTo(11 * s, 15 * s)
+          ..lineTo(16 * s, 9.3 * s);
+        canvas.drawPath(check, stroke);
     }
   }
 
