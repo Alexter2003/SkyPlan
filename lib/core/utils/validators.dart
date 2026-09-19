@@ -1,9 +1,4 @@
-/// Pure, framework-free validators shared by every form in the app
-/// (`auth`, `user`, `locations`, `activities`, `pending_activities`).
-///
-/// Each function returns `null` when the value is valid, or a
-/// Spanish-language error message otherwise — the shape
-/// [TextFormField.validator] and the kit's input widgets expect.
+/// Validadores compartidos por los formularios de la app.
 abstract final class SkyValidators {
   static final RegExp _emailPattern = RegExp(
     r'^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$',
@@ -38,21 +33,72 @@ abstract final class SkyValidators {
     return null;
   }
 
-  /// Password rule: at least 8 characters, one letter and one number —
-  /// enough to defend in the oral evaluation without being punitive.
+  /// Regla de contraseña: 8–72 caracteres, mayúscula, minúscula y dígito.
   static String? password(String? value) {
     final requiredError = required(value, field: 'La contraseña');
     if (requiredError != null) return requiredError;
     final v = value!;
-    if (v.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
-    if (!RegExp(r'[A-Za-z]').hasMatch(v) || !RegExp(r'\d').hasMatch(v)) {
-      return 'La contraseña debe combinar letras y números';
+    if (v.length < 8 || v.length > 72) {
+      return 'La contraseña debe tener entre 8 y 72 caracteres';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(v) ||
+        !RegExp(r'[A-Z]').hasMatch(v) ||
+        !RegExp(r'\d').hasMatch(v)) {
+      return 'La contraseña debe combinar mayúsculas, minúsculas y números';
     }
     return null;
   }
 
-  /// Validates a confirmation field against the original password value —
-  /// used by the double-confirmation change-password screen (req. 2.c).
+  /// Checklist en vivo de las reglas de contraseña, para el registro.
+  static List<({String label, bool met})> passwordRules(String value) {
+    return [
+      (
+        label: 'Entre 8 y 72 caracteres',
+        met: value.length >= 8 && value.length <= 72,
+      ),
+      (label: 'Al menos una minúscula', met: RegExp(r'[a-z]').hasMatch(value)),
+      (label: 'Al menos una mayúscula', met: RegExp(r'[A-Z]').hasMatch(value)),
+      (label: 'Al menos un número', met: RegExp(r'\d').hasMatch(value)),
+    ];
+  }
+
+  static final RegExp _usernamePattern = RegExp(r'^[A-Za-z0-9._-]+$');
+
+  /// Nombre de usuario: 3–50 caracteres, letras/números/`.`/`_`/`-`.
+  static String? username(String? value) {
+    final requiredError = required(value, field: 'El nombre de usuario');
+    if (requiredError != null) return requiredError;
+    final v = value!.trim();
+    if (v.length < 3 || v.length > 50) {
+      return 'El nombre de usuario debe tener entre 3 y 50 caracteres';
+    }
+    if (!_usernamePattern.hasMatch(v)) {
+      return 'Solo letras, números, puntos, guiones y guiones bajos';
+    }
+    return null;
+  }
+
+  /// Identificador de login: correo o usuario, 3–255 caracteres.
+  static String? loginIdentifier(String? value) {
+    final requiredError = required(value, field: 'El correo o usuario');
+    if (requiredError != null) return requiredError;
+    final length = value!.trim().length;
+    if (length < 3 || length > 255) {
+      return 'Ingresa un correo o usuario válido';
+    }
+    return null;
+  }
+
+  /// Código de confirmación: 5 caracteres alfanuméricos.
+  static String? confirmationCode(String? value) {
+    final requiredError = required(value, field: 'El código');
+    if (requiredError != null) return requiredError;
+    if (!RegExp(r'^[A-Za-z0-9]{5}$').hasMatch(value!.trim())) {
+      return 'El código debe tener 5 caracteres alfanuméricos';
+    }
+    return null;
+  }
+
   static String? passwordsMatch(String? confirmation, String original) {
     final requiredError = required(confirmation, field: 'La confirmación');
     if (requiredError != null) return requiredError;
@@ -62,8 +108,6 @@ abstract final class SkyValidators {
     return null;
   }
 
-  /// True when two [DateTime] ranges (each `[start, end)`) overlap — the
-  /// rule behind requirement 4.a.i ("no se crucen entre sí").
   static bool rangesOverlap(
     DateTime startA,
     DateTime endA,
