@@ -8,40 +8,72 @@ import '../config/app_config.dart';
 import 'api_envelope.dart';
 import 'api_exception.dart';
 
+/// Entrega el token de sesión vigente (o `null` si no hay sesión).
+typedef TokenProvider = Future<String?> Function();
+
 /// Cliente HTTP para la API de SkyPlan.
 class ApiClient {
-  ApiClient({http.Client? client}) : _client = client ?? http.Client();
+  ApiClient({http.Client? client, this.tokenProvider})
+    : _client = client ?? http.Client();
 
   final http.Client _client;
+  final TokenProvider? tokenProvider;
+  final _unauthorized = StreamController<void>.broadcast();
   static const _timeout = Duration(seconds: 15);
+
+  /// Emite cuando una petición autenticada recibe 401 (sesión inválida).
+  Stream<void> get unauthorized => _unauthorized.stream;
+
+  Future<ApiEnvelope> getJson(
+    String path, {
+    bool authenticated = true,
+    String? token,
+  }) => _send('GET', path, authenticated: authenticated, token: token);
 
   Future<ApiEnvelope> postJson(
     String path,
     Map<String, dynamic> body, {
+    bool authenticated = true,
     String? token,
-  }) => _send('POST', path, body: body, token: token);
+  }) => _send(
+    'POST',
+    path,
+    body: body,
+    authenticated: authenticated,
+    token: token,
+  );
+
+  Future<ApiEnvelope> patchJson(
+    String path,
+    Map<String, dynamic> body, {
+    bool authenticated = true,
+  }) => _send('PATCH', path, body: body, authenticated: authenticated);
+
+  Future<ApiEnvelope> deleteJson(String path, {bool authenticated = true}) =>
+      _send('DELETE', path, authenticated: authenticated);
 
   Future<ApiEnvelope> _send(
     String method,
     String path, {
     Map<String, dynamic>? body,
+    required bool authenticated,
     String? token,
   }) async {
     final uri = Uri.parse('${AppConfig.apiBaseUrl}$path');
+    final resolvedToken =
+        token ?? (authenticated ? await tokenProvider?.call() : null);
     final headers = <String, String>{
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      if (resolvedToken != null) 'Authorization': 'Bearer $resolvedToken',
     };
+
+    final request = http.Request(method, uri)..headers.addAll(headers);
+    if (body != null) request.body = jsonEncode(body);
 
     http.Response response;
     try {
-      response = await _client
-          .post(
-            uri,
-            headers: headers,
-            body: body == null ? null : jsonEncode(body),
-          )
-          .timeout(_timeout);
+      final streamed = await _client.send(request).timeout(_timeout);
+      response = await http.Response.fromStream(streamed).timeout(_timeout);
     } on TimeoutException {
       throw const NetworkException();
     } on SocketException {
@@ -68,6 +100,9 @@ class ApiClient {
     });
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      if (response.statusCode == 401 && authenticated) {
+        _unauthorized.add(null);
+      }
       throw ApiException(
         status: envelope.status,
         message: envelope.message.isNotEmpty
@@ -80,5 +115,8 @@ class ApiClient {
     return envelope;
   }
 
-  void close() => _client.close();
+  void close() {
+    _unauthorized.close();
+    _client.close();
+  }
 }

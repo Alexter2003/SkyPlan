@@ -12,15 +12,24 @@ enum SessionStatus { unknown, authenticated, unauthenticated }
 
 /// Sesión activa de la app: usuario y token actuales.
 class SessionController extends ChangeNotifier {
-  SessionController({required SessionStorage storage, required Logout logout})
-    : _storage = storage,
-      _logout = logout;
+  SessionController({
+    required SessionStorage storage,
+    required Logout logout,
+    Stream<void>? unauthorized,
+  }) : _storage = storage,
+       _logout = logout {
+    _unauthorizedSub = unauthorized?.listen((_) => expire());
+  }
 
   final SessionStorage _storage;
   final Logout _logout;
+  StreamSubscription<void>? _unauthorizedSub;
 
   SessionStatus status = SessionStatus.unknown;
   Session? session;
+
+  /// `true` cuando la sesión terminó porque el servidor rechazó el token.
+  bool expired = false;
 
   /// Lee la sesión guardada al iniciar la app.
   Future<void> bootstrap() async {
@@ -81,5 +90,23 @@ class SessionController extends ChangeNotifier {
     session = null;
     status = SessionStatus.unauthenticated;
     notifyListeners();
+  }
+
+  /// El servidor rechazó el token: limpia la sesión local.
+  Future<void> expire() async {
+    if (status != SessionStatus.authenticated) return;
+    await _storage.clear();
+    session = null;
+    status = SessionStatus.unauthenticated;
+    expired = true;
+    notifyListeners();
+  }
+
+  void acknowledgeExpiry() => expired = false;
+
+  @override
+  void dispose() {
+    _unauthorizedSub?.cancel();
+    super.dispose();
   }
 }
