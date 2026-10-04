@@ -3,30 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/design_system/design_system.dart';
+import '../../../../core/navigation/app_drawer.dart';
 import '../../../../core/routing/app_routes.dart';
 import '../../../auth/presentation/state/session_controller.dart';
 
 /// Pantalla principal tras el login.
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  bool _loggingOut = false;
-
-  Future<void> _logout() async {
-    setState(() => _loggingOut = true);
-    await context.read<SessionController>().endSession();
-    if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
-  }
-
-  String _formatExpiry(DateTime expiresAt) {
+  static String _formatExpiry(DateTime expiresAt) {
     final local = expiresAt.toLocal();
     final d = local.day.toString().padLeft(2, '0');
     final m = local.month.toString().padLeft(2, '0');
@@ -43,32 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = session?.user;
 
     return SkyScaffold(
+      drawer: const AppDrawer(currentRoute: AppRoutes.home),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const SkyLogo(showTagline: false, markSize: 28),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: SkySpacing.xs),
-            child: _loggingOut
-                ? const SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2.4),
-                      ),
-                    ),
-                  )
-                : SkyIconButton(
-                    icon: SkyIconType.logout,
-                    tooltip: 'Cerrar sesión',
-                    onPressed: _logout,
-                  ),
+        leading: Builder(
+          builder: (context) => SkyIconButton(
+            icon: SkyIconType.menu,
+            tooltip: 'Menú',
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
-        ],
+        ),
+        title: const SkyLogo(showTagline: false, markSize: 28),
       ),
       body: Center(
         child: ConstrainedBox(
@@ -152,10 +123,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+              const SizedBox(height: SkySpacing.md),
+              SkyFadeSlideIn(
+                delay: const Duration(milliseconds: 140),
+                child: SkyCard(
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.locations),
+                  child: Row(
+                    children: [
+                      SkyIcon(
+                        SkyIconType.location,
+                        size: 28,
+                        color: colors.primaryBlue,
+                      ),
+                      const SizedBox(width: SkySpacing.sm),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Mis ubicaciones', style: typography.title),
+                            Text(
+                              'Registra y administra tus lugares',
+                              style: typography.caption.copyWith(
+                                color: colors.subtle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SkyIcon(
+                        SkyIconType.chevronRight,
+                        size: 20,
+                        color: colors.subtle,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const Spacer(),
               if (kDebugMode)
                 SkyFadeSlideIn(
-                  delay: const Duration(milliseconds: 140),
+                  delay: const Duration(milliseconds: 180),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: SkySpacing.sm),
                     child: SkyButton(

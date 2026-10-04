@@ -364,6 +364,40 @@ class _KitGalleryScreenState extends State<KitGalleryScreen> {
           ),
 
           _SectionTitle(
+            'Navegación',
+            usage: 'primaryBlue (seleccionado), primaryRed (destructivo)',
+          ),
+          SkyCard(
+            padding: const EdgeInsets.all(SkySpacing.xs),
+            child: Column(
+              children: [
+                SkyDrawerItem(
+                  icon: SkyIconType.home,
+                  label: 'Inicio',
+                  selected: true,
+                  onTap: () {},
+                ),
+                SkyDrawerItem(
+                  icon: SkyIconType.location,
+                  label: 'Mis ubicaciones',
+                  onTap: () {},
+                ),
+                const SkyDrawerItem(
+                  icon: SkyIconType.calendar,
+                  label: 'Actividades',
+                  enabled: false,
+                ),
+                SkyDrawerItem(
+                  icon: SkyIconType.logout,
+                  label: 'Cerrar sesión',
+                  destructive: true,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+
+          _SectionTitle(
             'Movimiento',
             usage: 'SkyMotion.base/fast (duración), standard (curva)',
           ),

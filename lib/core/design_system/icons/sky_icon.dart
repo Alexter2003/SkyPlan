@@ -28,6 +28,14 @@ enum SkyIconType {
   arrowLeft,
   refresh,
   shieldCheck,
+  home,
+  plus,
+  edit,
+  trash,
+  crosshair,
+  map,
+  moreVertical,
+  pin,
 }
 
 /// Renders one [SkyIconType] as a [CustomPaint]. Color defaults to the
@@ -259,6 +267,86 @@ class _SkyIconPainter extends CustomPainter {
           ..lineTo(11 * s, 15 * s)
           ..lineTo(16 * s, 9.3 * s);
         canvas.drawPath(check, stroke);
+      case SkyIconType.home:
+        final roof = Path()
+          ..moveTo(3 * s, 11 * s)
+          ..lineTo(12 * s, 3.5 * s)
+          ..lineTo(21 * s, 11 * s);
+        canvas.drawPath(roof, stroke);
+        final body = Path()
+          ..moveTo(5.5 * s, 9.5 * s)
+          ..lineTo(5.5 * s, 20.5 * s)
+          ..lineTo(18.5 * s, 20.5 * s)
+          ..lineTo(18.5 * s, 9.5 * s);
+        canvas.drawPath(body, stroke);
+        canvas.drawLine(p(10, 20.5), p(10, 14.5), stroke);
+        canvas.drawLine(p(14, 20.5), p(14, 14.5), stroke);
+        canvas.drawLine(p(10, 14.5), p(14, 14.5), stroke);
+      case SkyIconType.plus:
+        canvas.drawLine(p(12, 5), p(12, 19), stroke);
+        canvas.drawLine(p(5, 12), p(19, 12), stroke);
+      case SkyIconType.edit:
+        final pencil = Path()
+          ..moveTo(4 * s, 20 * s)
+          ..lineTo(4.8 * s, 15.8 * s)
+          ..lineTo(16 * s, 4.6 * s)
+          ..lineTo(19.4 * s, 8 * s)
+          ..lineTo(8.2 * s, 19.2 * s)
+          ..close();
+        canvas.drawPath(pencil, stroke);
+        canvas.drawLine(p(13.8, 6.8), p(17.2, 10.2), stroke);
+      case SkyIconType.trash:
+        canvas.drawLine(p(4, 7), p(20, 7), stroke);
+        canvas.drawLine(p(9.5, 4), p(14.5, 4), stroke);
+        final bin = Path()
+          ..moveTo(6 * s, 7 * s)
+          ..lineTo(7 * s, 20 * s)
+          ..lineTo(17 * s, 20 * s)
+          ..lineTo(18 * s, 7 * s);
+        canvas.drawPath(bin, stroke);
+        canvas.drawLine(p(10, 11), p(10, 16), stroke);
+        canvas.drawLine(p(14, 11), p(14, 16), stroke);
+      case SkyIconType.crosshair:
+        canvas.drawCircle(p(12, 12), 6.5 * s, stroke);
+        canvas.drawCircle(p(12, 12), 1.6 * s, fill);
+        canvas.drawLine(p(12, 2), p(12, 5), stroke);
+        canvas.drawLine(p(12, 19), p(12, 22), stroke);
+        canvas.drawLine(p(2, 12), p(5, 12), stroke);
+        canvas.drawLine(p(19, 12), p(22, 12), stroke);
+      case SkyIconType.map:
+        final fold = Path()
+          ..moveTo(3 * s, 6.5 * s)
+          ..lineTo(9 * s, 4 * s)
+          ..lineTo(15 * s, 6.5 * s)
+          ..lineTo(21 * s, 4 * s)
+          ..lineTo(21 * s, 17.5 * s)
+          ..lineTo(15 * s, 20 * s)
+          ..lineTo(9 * s, 17.5 * s)
+          ..lineTo(3 * s, 20 * s)
+          ..close();
+        canvas.drawPath(fold, stroke);
+        canvas.drawLine(p(9, 4), p(9, 17.5), stroke);
+        canvas.drawLine(p(15, 6.5), p(15, 20), stroke);
+      case SkyIconType.moreVertical:
+        for (final y in [5.0, 12.0, 19.0]) {
+          canvas.drawCircle(p(12, y), 1.6 * s, fill);
+        }
+      case SkyIconType.pin:
+        final path = Path()
+          ..moveTo(12 * s, 22 * s)
+          ..cubicTo(12 * s, 22 * s, 5 * s, 14.5 * s, 5 * s, 9.5 * s)
+          ..cubicTo(5 * s, 5.9 * s, 8.1 * s, 3 * s, 12 * s, 3 * s)
+          ..cubicTo(15.9 * s, 3 * s, 19 * s, 5.9 * s, 19 * s, 9.5 * s)
+          ..cubicTo(19 * s, 14.5 * s, 12 * s, 22 * s, 12 * s, 22 * s)
+          ..close();
+        canvas.drawPath(path, fill);
+        canvas.drawCircle(
+          p(12, 9.5),
+          2.4 * s,
+          Paint()
+            ..color = const Color(0xFFFFFFFF)
+            ..style = PaintingStyle.fill,
+        );
     }
   }
 

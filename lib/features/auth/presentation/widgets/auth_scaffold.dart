@@ -34,7 +34,6 @@ class AuthScaffold extends StatelessWidget {
         builder: (context, constraints) {
           return SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            // Centra si cabe; hace scroll normal si no (ej. con teclado).
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Center(

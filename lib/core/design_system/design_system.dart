@@ -24,6 +24,7 @@ export 'components/inputs/sky_time_field.dart';
 export 'components/motion/sky_fade_slide_in.dart';
 export 'components/motion/sky_page_route.dart';
 export 'components/motion/sky_shake.dart';
+export 'components/navigation/sky_drawer.dart';
 export 'components/selection/sky_checkbox.dart';
 export 'components/selection/sky_chip.dart';
 export 'components/selection/sky_radio.dart';

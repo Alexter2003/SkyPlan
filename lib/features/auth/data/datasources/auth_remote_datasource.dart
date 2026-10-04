@@ -19,7 +19,7 @@ class AuthRemoteDataSource {
       'username': username,
       'password': password,
       'passwordConfirmation': passwordConfirmation,
-    });
+    }, authenticated: false);
     return AuthUserModel.fromJson(envelope.dataObject);
   }
 
@@ -30,12 +30,14 @@ class AuthRemoteDataSource {
     final envelope = await _client.postJson('/users/confirm-email', {
       'email': email,
       'code': code,
-    });
+    }, authenticated: false);
     return AuthUserModel.fromJson(envelope.dataObject);
   }
 
   Future<void> resendConfirmation({required String email}) {
-    return _client.postJson('/users/resend-confirmation', {'email': email});
+    return _client.postJson('/users/resend-confirmation', {
+      'email': email,
+    }, authenticated: false);
   }
 
   Future<SessionModel> login({
@@ -45,11 +47,16 @@ class AuthRemoteDataSource {
     final envelope = await _client.postJson('/auth/login', {
       'identifier': identifier,
       'password': password,
-    });
+    }, authenticated: false);
     return SessionModel.fromJson(envelope.dataObject);
   }
 
   Future<void> logout({required String token}) {
-    return _client.postJson('/auth/logout', const {}, token: token);
+    return _client.postJson(
+      '/auth/logout',
+      const {},
+      token: token,
+      authenticated: false,
+    );
   }
 }
