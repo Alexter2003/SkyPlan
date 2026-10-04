@@ -84,11 +84,15 @@ class SkyButton extends StatelessWidget {
             child: leading!,
           ),
         if (loading || leading != null) const SizedBox(width: 8),
-        Text(
-          label,
-          style: typography.bodyStrong.copyWith(
-            color: foreground,
-            letterSpacing: 0.2,
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: typography.bodyStrong.copyWith(
+              color: foreground,
+              letterSpacing: 0.2,
+            ),
           ),
         ),
       ],
