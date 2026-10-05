@@ -6,6 +6,7 @@ import '../../features/auth/domain/usecases/logout.dart';
 import '../../features/auth/presentation/state/session_controller.dart';
 import '../../features/activities/di/activities_providers.dart';
 import '../../features/locations/di/locations_providers.dart';
+import '../../features/notifications/di/notifications_providers.dart';
 import '../network/api_client.dart';
 import '../storage/session_storage.dart';
 
@@ -38,6 +39,7 @@ class AppProviders extends StatelessWidget {
             unauthorized: context.read<ApiClient>().unauthorized,
           ),
         ),
+        ...notificationsProviders,
       ],
       child: child,
     );
