@@ -58,7 +58,9 @@ class _LocationFormViewState extends State<_LocationFormView> {
   Future<void> _pickOnMap(VisitFormController controller) async {
     final point = await Navigator.of(context).pushNamed<GeoPoint>(
       AppRoutes.mapPicker,
-      arguments: MapPickerArgs(initial: controller.point),
+      arguments: MapPickerArgs(
+        initial: controller.isEditing ? controller.point : null,
+      ),
     );
     if (point != null) controller.setPoint(point);
   }
