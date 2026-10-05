@@ -44,7 +44,7 @@ void main() {
     expect(find.text('Inicio'), findsOneWidget);
     expect(find.text('Mis ubicaciones'), findsOneWidget);
     expect(find.text('Actividades'), findsOneWidget);
-    expect(find.text('Pronto'), findsNWidgets(3));
+    expect(find.text('Pronto'), findsNWidgets(2));
   });
 
   testWidgets('navigates to Mis ubicaciones', (tester) async {

@@ -36,6 +36,9 @@ enum SkyIconType {
   map,
   moreVertical,
   pin,
+  snow,
+  wind,
+  partlyCloudy,
 }
 
 /// Renders one [SkyIconType] as a [CustomPaint]. Color defaults to the
@@ -346,6 +349,52 @@ class _SkyIconPainter extends CustomPainter {
           Paint()
             ..color = const Color(0xFFFFFFFF)
             ..style = PaintingStyle.fill,
+        );
+      case SkyIconType.snow:
+        for (final angle in [0, 60, 120]) {
+          final rad = angle * math.pi / 180;
+          final offset = Offset(9 * s * _cos(rad), 9 * s * _sin(rad));
+          canvas.drawLine(p(12, 12) - offset, p(12, 12) + offset, stroke);
+        }
+      case SkyIconType.wind:
+        canvas.drawPath(
+          Path()
+            ..moveTo(3 * s, 9 * s)
+            ..lineTo(14 * s, 9 * s)
+            ..arcToPoint(
+              Offset(14 * s, 5 * s),
+              radius: Radius.circular(2 * s),
+              clockwise: false,
+            ),
+          stroke,
+        );
+        canvas.drawPath(
+          Path()
+            ..moveTo(3 * s, 14 * s)
+            ..lineTo(18 * s, 14 * s)
+            ..arcToPoint(
+              Offset(18 * s, 18 * s),
+              radius: Radius.circular(2 * s),
+              clockwise: true,
+            ),
+          stroke,
+        );
+      case SkyIconType.partlyCloudy:
+        canvas.drawCircle(p(8, 8), 3 * s, stroke);
+        canvas.drawLine(p(8, 1.5), p(8, 2.5), stroke);
+        canvas.drawLine(p(2, 8), p(3, 8), stroke);
+        canvas.drawLine(p(3.8, 3.8), p(4.5, 4.5), stroke);
+        canvas.drawPath(
+          Path()
+            ..moveTo(9 * s, 20 * s)
+            ..cubicTo(6.5 * s, 20 * s, 5 * s, 18.2 * s, 5 * s, 16.3 * s)
+            ..cubicTo(5 * s, 14.5 * s, 6.3 * s, 13.2 * s, 8 * s, 13 * s)
+            ..cubicTo(8.5 * s, 11 * s, 10.3 * s, 9.5 * s, 12.5 * s, 9.5 * s)
+            ..cubicTo(15.2 * s, 9.5 * s, 17.3 * s, 11.5 * s, 17.5 * s, 14 * s)
+            ..cubicTo(19.5 * s, 14.2 * s, 21 * s, 15.7 * s, 21 * s, 17.6 * s)
+            ..cubicTo(21 * s, 19 * s, 19.8 * s, 20 * s, 18 * s, 20 * s)
+            ..close(),
+          stroke,
         );
     }
   }

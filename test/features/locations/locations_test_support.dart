@@ -42,6 +42,9 @@ Visit makeVisit({
             humidity: 71,
             atmosphericPressure: 1013.4,
             updatedAt: DateTime(2026, 1, 1),
+            cloudCover: 40,
+            windSpeed: 8,
+            weatherCode: 2,
           )
         : null,
   );

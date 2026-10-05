@@ -100,6 +100,7 @@ class HomeScreen extends StatelessWidget {
                               'Correo confirmado',
                               style: typography.caption,
                             ),
+                            const SizedBox(height: SkySpacing.md),
                             const Spacer(),
                             SkyBadge(
                               label: user.emailConfirmed ? 'Sí' : 'No',
@@ -163,7 +164,7 @@ class HomeScreen extends StatelessWidget {
               const Spacer(),
               if (kDebugMode)
                 SkyFadeSlideIn(
-                  delay: const Duration(milliseconds: 180),
+                  delay: const Duration(milliseconds: 220),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: SkySpacing.sm),
                     child: SkyButton(

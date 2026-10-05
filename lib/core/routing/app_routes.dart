@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../features/activities/domain/entities/activity.dart';
+import '../../features/activities/presentation/screens/activities_screen.dart';
+import '../../features/activities/presentation/screens/activity_form_screen.dart';
+import '../../features/activities/presentation/screens/visit_activities_screen.dart';
 import '../../features/auth/presentation/screens/confirm_email_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -23,6 +27,19 @@ class LocationFormArgs {
   final Visit? visit;
 }
 
+/// Argumentos del formulario de actividad; `activity` nulo = crear.
+class ActivityFormArgs {
+  const ActivityFormArgs({this.activity, this.visit});
+  final Activity? activity;
+  final Visit? visit;
+}
+
+/// Argumentos del detalle de actividades de una ubicación.
+class VisitActivitiesArgs {
+  const VisitActivitiesArgs({required this.visit});
+  final Visit visit;
+}
+
 /// Argumentos del selector de mapa.
 class MapPickerArgs {
   const MapPickerArgs({this.initial});
@@ -38,6 +55,9 @@ abstract final class AppRoutes {
   static const locations = '/locations';
   static const locationForm = '/locations/form';
   static const mapPicker = '/locations/map';
+  static const activities = '/activities';
+  static const activityForm = '/activities/form';
+  static const visitActivities = '/locations/activities';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -78,6 +98,24 @@ abstract final class AppRoutes {
         return SkyPageRoute<GeoPoint>(
           settings: settings,
           builder: (_) => MapPickerScreen(initial: args?.initial),
+        );
+      case activities:
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => const ActivitiesScreen(),
+        );
+      case activityForm:
+        final args = settings.arguments as ActivityFormArgs?;
+        return SkyPageRoute<Activity>(
+          settings: settings,
+          builder: (_) =>
+              ActivityFormScreen(activity: args?.activity, visit: args?.visit),
+        );
+      case visitActivities:
+        final args = settings.arguments as VisitActivitiesArgs;
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => VisitActivitiesScreen(visit: args.visit),
         );
       default:
         return SkyPageRoute(

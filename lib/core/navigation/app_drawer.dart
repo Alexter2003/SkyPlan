@@ -67,10 +67,11 @@ class _AppDrawerState extends State<AppDrawer> {
           selected: widget.currentRoute == AppRoutes.locations,
           onTap: () => _go(AppRoutes.locations),
         ),
-        const SkyDrawerItem(
+        SkyDrawerItem(
           icon: SkyIconType.calendar,
           label: 'Actividades',
-          enabled: false,
+          selected: widget.currentRoute == AppRoutes.activities,
+          onTap: () => _go(AppRoutes.activities),
         ),
         const SkyDrawerItem(
           icon: SkyIconType.clock,

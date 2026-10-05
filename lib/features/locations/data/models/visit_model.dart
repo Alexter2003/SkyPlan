@@ -47,7 +47,7 @@ class VisitModel extends Visit {
     _ => VisitStatus.planned,
   };
 
-  // Los 5 campos de clima vienen null juntos (fecha a más de 10 días).
+  // Los campos de clima vienen null juntos (fecha a más de 10 días).
   static VisitWeather? _parseWeather(Map<String, dynamic> json) {
     final temperature = json['temperature'];
     final updatedAt = json['weatherUpdate'];
@@ -59,6 +59,9 @@ class VisitModel extends Visit {
       atmosphericPressure: (json['atmosphericPressure'] as num? ?? 0)
           .toDouble(),
       updatedAt: DateTime.parse(updatedAt as String),
+      cloudCover: (json['cloudCover'] as num?)?.toDouble(),
+      windSpeed: (json['windSpeed'] as num?)?.toDouble(),
+      weatherCode: (json['weatherCode'] as num?)?.toInt(),
     );
   }
 }
