@@ -17,12 +17,20 @@ class SkyChip extends StatelessWidget {
     this.selected = false,
     this.onSelected,
     this.variant = SkyChipVariant.outline,
+    this.enabled = true,
+    this.leading,
   });
 
   final String label;
   final bool selected;
   final ValueChanged<bool>? onSelected;
   final SkyChipVariant variant;
+
+  /// Deshabilitado: atenuado y sin respuesta al toque.
+  final bool enabled;
+
+  /// Icono opcional antes de la etiqueta.
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -34,27 +42,40 @@ class SkyChip extends StatelessWidget {
     final background = filled ? colors.primaryBlue : colors.surface;
     final foreground = filled ? colors.onAccent : colors.ink;
 
-    return AnimatedContainer(
-      duration: SkyMotion.fast,
-      curve: SkyMotion.standard,
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: shapes.radiusPill,
-        border: Border.all(color: colors.ink, width: shapes.borderThin),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+    final tappable = enabled && onSelected != null;
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.4,
+      child: AnimatedContainer(
+        duration: SkyMotion.fast,
+        curve: SkyMotion.standard,
+        decoration: BoxDecoration(
+          color: background,
           borderRadius: shapes.radiusPill,
-          onTap: onSelected == null ? null : () => onSelected!(!selected),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Text(
-              label,
-              style: typography.caption.copyWith(
-                fontWeight: FontWeight.w700,
-                color: foreground,
-                letterSpacing: 0.2,
+          border: Border.all(color: colors.ink, width: shapes.borderThin),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: shapes.radiusPill,
+            onTap: tappable ? () => onSelected!(!selected) : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (leading != null) ...[leading!, const SizedBox(width: 6)],
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: typography.caption.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: foreground,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
