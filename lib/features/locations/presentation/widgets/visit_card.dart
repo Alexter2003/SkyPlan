@@ -4,9 +4,9 @@ import '../../../../core/design_system/design_system.dart';
 import '../../domain/entities/visit.dart';
 import 'coordinates_label.dart';
 import 'date_format.dart';
-import 'weather_condition_mapper.dart';
+import 'visit_weather_panel.dart';
 
-enum VisitAction { edit, complete, cancel, delete }
+enum VisitAction { activities, edit, complete, cancel, delete }
 
 /// Tarjeta de una ubicación en el listado.
 class VisitCard extends StatelessWidget {
@@ -28,6 +28,7 @@ class VisitCard extends StatelessWidget {
   List<VisitAction> get _availableActions {
     final reference = today ?? DateTime.now();
     return [
+      VisitAction.activities,
       if (visit.isEditable) VisitAction.edit,
       if (visit.canComplete(reference)) VisitAction.complete,
       if (visit.canCancel) VisitAction.cancel,
@@ -61,6 +62,7 @@ class VisitCard extends StatelessWidget {
   }
 
   static String _labelOf(VisitAction action) => switch (action) {
+    VisitAction.activities => 'Ver actividades',
     VisitAction.edit => 'Editar',
     VisitAction.complete => 'Marcar como finalizada',
     VisitAction.cancel => 'Cancelar visita',
@@ -68,6 +70,7 @@ class VisitCard extends StatelessWidget {
   };
 
   static SkyIconType _iconOf(VisitAction action) => switch (action) {
+    VisitAction.activities => SkyIconType.calendar,
     VisitAction.edit => SkyIconType.edit,
     VisitAction.complete => SkyIconType.check,
     VisitAction.cancel => SkyIconType.close,
@@ -147,54 +150,9 @@ class VisitCard extends StatelessWidget {
           const SizedBox(height: SkySpacing.xs),
           const SkyDivider(),
           const SizedBox(height: SkySpacing.xs),
-          _WeatherSection(visit: visit),
+          VisitWeatherPanel(weather: visit.weather),
         ],
       ),
-    );
-  }
-}
-
-class _WeatherSection extends StatelessWidget {
-  const _WeatherSection({required this.visit});
-
-  final Visit visit;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.skyColors;
-    final typography = context.skyTypography;
-    final weather = visit.weather;
-
-    if (weather == null) {
-      return Row(
-        children: [
-          const SkyBadge(label: 'Clima pendiente'),
-          const SizedBox(width: SkySpacing.xs),
-          Expanded(
-            child: Text(
-              'Se cargará cuando falten 10 días o menos',
-              style: typography.caption.copyWith(color: colors.subtle),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Row(
-      children: [
-        SkyWeatherChip(
-          temperatureCelsius: weather.temperature.round(),
-          condition: conditionFor(weather),
-        ),
-        const SizedBox(width: SkySpacing.sm),
-        Expanded(
-          child: Text(
-            'Humedad ${weather.humidity.round()}% · '
-            'Lluvia ${weather.precipitation.toStringAsFixed(1)} mm',
-            style: typography.caption.copyWith(color: colors.subtle),
-          ),
-        ),
-      ],
     );
   }
 }

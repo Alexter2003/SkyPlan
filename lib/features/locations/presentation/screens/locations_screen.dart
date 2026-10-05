@@ -68,18 +68,23 @@ class _LocationsViewState extends State<_LocationsView>
 
     await context.read<VisitsListController>().load(silent: true);
     if (!mounted) return;
-    final message = visit != null
-        ? 'Ubicación actualizada'
-        : saved.weather == null
-        ? 'Ubicación registrada. El clima se cargará cuando falten 10 días o menos'
-        : 'Ubicación registrada';
-    SkySnackbar.show(context, message, tone: SkySnackbarTone.success);
+    SkySnackbar.show(
+      context,
+      visit != null ? 'Ubicación actualizada' : 'Ubicación registrada',
+      tone: SkySnackbarTone.success,
+    );
   }
 
   Future<void> _handle(Visit visit, VisitAction action) async {
     final controller = context.read<VisitsListController>();
 
     switch (action) {
+      case VisitAction.activities:
+        await Navigator.of(context).pushNamed(
+          AppRoutes.visitActivities,
+          arguments: VisitActivitiesArgs(visit: visit),
+        );
+        return;
       case VisitAction.edit:
         await _openForm(visit: visit);
         return;
