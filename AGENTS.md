@@ -46,6 +46,13 @@ symlink for Claude Code). Load the relevant one before doing related work:
    obvious from the code.
 6. Run `flutter analyze` and `flutter test` before opening a PR.
 
+## Spec-driven changes (OpenSpec)
+
+Non-trivial changes are proposed and tracked with [OpenSpec](https://github.com/Fission-AI/OpenSpec)
+under `openspec/` (config in `openspec/config.yaml`). Install once with
+`pnpm add -g @fission-ai/openspec@latest`. In Claude Code, start with
+`/opsx:propose "your idea"`, then `/opsx:apply` and `/opsx:archive`.
+
 ## For humans
 
 Everyone on the team should be able to explain and defend any part of the

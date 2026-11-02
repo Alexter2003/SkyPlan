@@ -13,4 +13,11 @@ class Session {
   final DateTime expiresAt;
   final bool mustChangePassword;
   final AuthUser user;
+
+  Session copyWith({bool? mustChangePassword, AuthUser? user}) => Session(
+    token: token,
+    expiresAt: expiresAt,
+    mustChangePassword: mustChangePassword ?? this.mustChangePassword,
+    user: user ?? this.user,
+  );
 }

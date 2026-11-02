@@ -1,0 +1,38 @@
+schema: spec-driven
+
+context: |
+  Language: en
+  All artifacts must be written in en.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Project: SkyPlan — Flutter mobile app ("Planificador de Actividades") for a university
+  mobile-development final project. Requirements spec: .agents/requirements/proyecto-final.md
+  Standards: AGENTS.md (single source of truth for all coding agents).
+  Architecture: Clean Architecture, feature-first — lib/features/<name>/{data,domain,presentation};
+  domain/ must not import Flutter or packages.
+  UI: built only from lib/core/design_system/ (tokens, theme, components); never hard-code
+  colors, type, radii, spacing or motion.
+  Workflow: never commit to main; one branch per change, merged via PR; code and commits in English;
+  run `flutter analyze` and `flutter test` before opening a PR.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

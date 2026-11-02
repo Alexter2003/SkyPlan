@@ -1,4 +1,5 @@
 import '../../../../core/network/api_client.dart';
+import '../models/account_profile_model.dart';
 import '../models/auth_user_model.dart';
 import '../models/session_model.dart';
 
@@ -58,5 +59,28 @@ class AuthRemoteDataSource {
       token: token,
       authenticated: false,
     );
+  }
+
+  Future<void> forgotPassword({required String email}) {
+    return _client.postJson('/auth/forgot-password', {
+      'email': email,
+    }, authenticated: false);
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) {
+    return _client.putJson('/auth/change-password', {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+      'confirmNewPassword': confirmNewPassword,
+    });
+  }
+
+  Future<AccountProfileModel> getProfile() async {
+    final envelope = await _client.getJson('/users/me');
+    return AccountProfileModel.fromJson(envelope.dataObject);
   }
 }

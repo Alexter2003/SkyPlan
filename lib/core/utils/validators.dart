@@ -99,6 +99,19 @@ abstract final class SkyValidators {
     return null;
   }
 
+  /// Nombre o apellido: 1–100 caracteres. Se permite vacío solo cuando el
+  /// campo nunca tuvo valor ([allowEmpty]); el backend no admite vaciarlo.
+  static String? personName(
+    String? value, {
+    String field = 'El nombre',
+    bool allowEmpty = false,
+  }) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return allowEmpty ? null : '$field no puede estar vacío';
+    if (v.length > 100) return '$field no puede exceder 100 caracteres';
+    return null;
+  }
+
   static String? passwordsMatch(String? confirmation, String original) {
     final requiredError = required(confirmation, field: 'La confirmación');
     if (requiredError != null) return requiredError;

@@ -4,7 +4,9 @@ import '../../features/activities/domain/entities/activity.dart';
 import '../../features/activities/presentation/screens/activities_screen.dart';
 import '../../features/activities/presentation/screens/activity_form_screen.dart';
 import '../../features/activities/presentation/screens/visit_activities_screen.dart';
+import '../../features/auth/presentation/screens/change_password_screen.dart';
 import '../../features/auth/presentation/screens/confirm_email_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
@@ -13,12 +15,20 @@ import '../../features/locations/domain/entities/visit.dart';
 import '../../features/locations/presentation/screens/location_form_screen.dart';
 import '../../features/locations/presentation/screens/locations_screen.dart';
 import '../../features/locations/presentation/screens/map_picker_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../design_system/components/motion/sky_page_route.dart';
 
 /// Argumentos para la ruta de confirmación de correo.
 class ConfirmEmailArgs {
   const ConfirmEmailArgs({required this.email});
   final String email;
+}
+
+/// Argumentos de "olvidé mi contraseña".
+class ForgotPasswordArgs {
+  const ForgotPasswordArgs({this.email = '', this.notice});
+  final String email;
+  final String? notice;
 }
 
 /// Argumentos del formulario de ubicación; `visit` nulo = crear.
@@ -51,7 +61,10 @@ abstract final class AppRoutes {
   static const login = '/login';
   static const register = '/register';
   static const confirmEmail = '/confirm-email';
+  static const forgotPassword = '/forgot-password';
+  static const changePassword = '/change-password';
   static const home = '/home';
+  static const profile = '/profile';
   static const locations = '/locations';
   static const locationForm = '/locations/form';
   static const mapPicker = '/locations/map';
@@ -77,10 +90,29 @@ abstract final class AppRoutes {
           settings: settings,
           builder: (_) => ConfirmEmailScreen(email: args.email),
         );
+      case forgotPassword:
+        final args = settings.arguments as ForgotPasswordArgs?;
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => ForgotPasswordScreen(
+            email: args?.email ?? '',
+            notice: args?.notice,
+          ),
+        );
+      case changePassword:
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => const ChangePasswordScreen(),
+        );
       case home:
         return SkyPageRoute(
           settings: settings,
           builder: (_) => const HomeScreen(),
+        );
+      case profile:
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => const ProfileScreen(),
         );
       case locations:
         return SkyPageRoute(

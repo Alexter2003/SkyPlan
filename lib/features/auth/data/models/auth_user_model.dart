@@ -7,6 +7,8 @@ class AuthUserModel extends AuthUser {
     required super.username,
     required super.emailConfirmed,
     required super.createdAt,
+    super.firstName,
+    super.lastName,
   });
 
   factory AuthUserModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,8 @@ class AuthUserModel extends AuthUser {
       username: json['username'] as String,
       emailConfirmed: json['emailConfirmed'] as bool,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
     );
   }
 }

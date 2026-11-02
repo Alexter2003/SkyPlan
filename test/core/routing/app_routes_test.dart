@@ -39,4 +39,15 @@ void main() {
 
     expect(route, isA<Route<Activity>>());
   });
+
+  test('recovery and profile routes resolve', () {
+    for (final name in [
+      AppRoutes.profile,
+      AppRoutes.changePassword,
+      AppRoutes.forgotPassword,
+    ]) {
+      final route = AppRoutes.onGenerateRoute(RouteSettings(name: name));
+      expect(route.settings.name, name);
+    }
+  });
 }

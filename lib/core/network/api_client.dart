@@ -19,10 +19,19 @@ class ApiClient {
   final http.Client _client;
   final TokenProvider? tokenProvider;
   final _unauthorized = StreamController<void>.broadcast();
+  final _passwordChangeRequired = StreamController<void>.broadcast();
   static const _timeout = Duration(seconds: 15);
+
+  /// Fragmento del 403 que el backend devuelve mientras hay una contraseña
+  /// temporal pendiente de cambiar.
+  static const passwordChangePendingMarker = 'cambiar tu contraseña antes';
 
   /// Emite cuando una petición autenticada recibe 401 (sesión inválida).
   Stream<void> get unauthorized => _unauthorized.stream;
+
+  /// Emite cuando una petición autenticada recibe el 403 de "cambio de
+  /// contraseña pendiente".
+  Stream<void> get passwordChangeRequired => _passwordChangeRequired.stream;
 
   Future<ApiEnvelope> getJson(
     String path, {
@@ -42,6 +51,12 @@ class ApiClient {
     authenticated: authenticated,
     token: token,
   );
+
+  Future<ApiEnvelope> putJson(
+    String path,
+    Map<String, dynamic> body, {
+    bool authenticated = true,
+  }) => _send('PUT', path, body: body, authenticated: authenticated);
 
   Future<ApiEnvelope> patchJson(
     String path,
@@ -103,6 +118,13 @@ class ApiClient {
       if (response.statusCode == 401 && authenticated) {
         _unauthorized.add(null);
       }
+      if (response.statusCode == 403 &&
+          authenticated &&
+          envelope.message.toLowerCase().contains(
+            passwordChangePendingMarker,
+          )) {
+        _passwordChangeRequired.add(null);
+      }
       throw ApiException(
         status: envelope.status,
         message: envelope.message.isNotEmpty
@@ -117,6 +139,7 @@ class ApiClient {
 
   void close() {
     _unauthorized.close();
+    _passwordChangeRequired.close();
     _client.close();
   }
 }

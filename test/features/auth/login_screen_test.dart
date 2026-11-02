@@ -72,4 +72,42 @@ void main() {
 
     expect(find.text('route:home'), findsOneWidget);
   });
+
+  testWidgets('login with a temporary password goes to change-password', (
+    tester,
+  ) async {
+    usePhoneViewport(tester);
+    final repository = FakeAuthRepository()..loginRequiresPasswordChange = true;
+
+    await tester.pumpWidget(
+      buildAuthTestApp(repository: repository, child: const LoginScreen()),
+    );
+
+    await tester.enterText(
+      find.byType(TextFormField).at(0),
+      'user@example.com',
+    );
+    await tester.enterText(find.byType(TextFormField).at(1), 'Tmp9xKq2LmWz');
+    await tester.tap(find.text('Iniciar sesión'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('route:change-password'), findsOneWidget);
+    expect(find.text('route:home'), findsNothing);
+  });
+
+  testWidgets('"Olvidé mi contraseña" opens forgot-password', (tester) async {
+    usePhoneViewport(tester);
+
+    await tester.pumpWidget(
+      buildAuthTestApp(
+        repository: FakeAuthRepository(),
+        child: const LoginScreen(),
+      ),
+    );
+
+    await tester.tap(find.text('Olvidé mi contraseña'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('route:forgot-password'), findsOneWidget);
+  });
 }

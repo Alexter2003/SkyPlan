@@ -1,3 +1,4 @@
+import '../entities/account_profile.dart';
 import '../entities/auth_user.dart';
 import '../entities/session.dart';
 
@@ -17,4 +18,17 @@ abstract class AuthRepository {
   Future<Session> login({required String identifier, required String password});
 
   Future<void> logout({required String token});
+
+  /// Pide una contraseña temporal por correo. Siempre responde igual.
+  Future<void> forgotPassword({required String email});
+
+  /// Define la contraseña propia tras un login con temporal.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  });
+
+  /// Perfil del usuario con sesión, incluido `mustChangePassword`.
+  Future<AccountProfile> getProfile();
 }

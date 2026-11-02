@@ -4,7 +4,10 @@ import '../../../core/network/api_client.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../domain/usecases/change_password.dart';
 import '../domain/usecases/confirm_email.dart';
+import '../domain/usecases/forgot_password.dart';
+import '../domain/usecases/get_account_profile.dart';
 import '../domain/usecases/login.dart';
 import '../domain/usecases/logout.dart';
 import '../domain/usecases/register_user.dart';
@@ -30,4 +33,13 @@ final authProviders = [
   ),
   Provider<Login>(create: (context) => Login(context.read<AuthRepository>())),
   Provider<Logout>(create: (context) => Logout(context.read<AuthRepository>())),
+  Provider<ForgotPassword>(
+    create: (context) => ForgotPassword(context.read<AuthRepository>()),
+  ),
+  Provider<ChangePassword>(
+    create: (context) => ChangePassword(context.read<AuthRepository>()),
+  ),
+  Provider<GetAccountProfile>(
+    create: (context) => GetAccountProfile(context.read<AuthRepository>()),
+  ),
 ];
