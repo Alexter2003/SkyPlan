@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'core/design_system/gallery/kit_gallery_screen.dart';
 import 'core/design_system/theme/sky_theme.dart';
 import 'core/design_system/theme/sky_theme_context.dart';
 import 'core/di/app_providers.dart';
@@ -47,9 +45,6 @@ class _SkyPlanAppState extends State<SkyPlanApp> {
               darkTheme: SkyTheme.dark,
               home: const AuthGate(),
               onGenerateRoute: AppRoutes.onGenerateRoute,
-              routes: kDebugMode
-                  ? {'/kit': (_) => const KitGalleryScreen()}
-                  : const {},
             ),
           ),
         ),
