@@ -1,4 +1,6 @@
-enum ViabilityNotificationType { notViable, viableAgain }
+/// `autoCancelled`: el sistema canceló la actividad por el clima; el usuario
+/// puede reactivarla o reagendarla desde Pendientes.
+enum ViabilityNotificationType { notViable, viableAgain, autoCancelled }
 
 /// Aviso de que una actividad al aire libre dejó de ser viable (o volvió a serlo).
 class ViabilityNotification {
