@@ -177,6 +177,7 @@ Widget buildLocationsTestApp({
           '/login': (_) => const Scaffold(body: Text('route:login')),
           '/home': (_) => const Scaffold(body: Text('route:home')),
           '/locations': (_) => const Scaffold(body: Text('route:locations')),
+          '/profile': (_) => const Scaffold(body: Text('route:profile')),
         },
       ),
     ),

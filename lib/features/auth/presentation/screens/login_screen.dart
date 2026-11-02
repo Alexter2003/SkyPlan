@@ -54,15 +54,22 @@ class _LoginViewState extends State<_LoginView> {
     await context.read<SessionController>().establish(session);
     if (!mounted) return;
 
+    final navigator = Navigator.of(context);
     if (session.mustChangePassword) {
-      SkySnackbar.show(
-        context,
-        'Debes cambiar tu contraseña temporal antes de continuar',
-        tone: SkySnackbarTone.neutral,
-      );
-      // TODO(módulo 2): pantalla de cambio de contraseña.
+      navigator.pushNamedAndRemoveUntil(AppRoutes.changePassword, (_) => false);
+      return;
     }
-    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
+    navigator.pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
+  }
+
+  void _goToForgotPassword() {
+    final identifier = _identifierController.text.trim();
+    Navigator.of(context).pushNamed(
+      AppRoutes.forgotPassword,
+      arguments: ForgotPasswordArgs(
+        email: identifier.contains('@') ? identifier : '',
+      ),
+    );
   }
 
   void _goToConfirmEmail() {
@@ -135,7 +142,17 @@ class _LoginViewState extends State<_LoginView> {
                   validator: (v) =>
                       SkyValidators.required(v, field: 'La contraseña'),
                 ),
-                const SizedBox(height: SkySpacing.xl),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SkyButton(
+                    label: 'Olvidé mi contraseña',
+                    variant: SkyButtonVariant.ghost,
+                    onPressed: controller.isLoading
+                        ? null
+                        : _goToForgotPassword,
+                  ),
+                ),
+                const SizedBox(height: SkySpacing.md),
                 SkyButton(
                   label: 'Iniciar sesión',
                   expand: true,

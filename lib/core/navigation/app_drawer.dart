@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../features/auth/domain/entities/auth_user.dart';
 import '../../features/auth/presentation/state/session_controller.dart';
 import '../design_system/design_system.dart';
 import '../routing/app_routes.dart';
@@ -31,6 +32,14 @@ class _AppDrawerState extends State<AppDrawer> {
     navigator.pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
   }
 
+  String? _displayName(AuthUser user) {
+    final name = [
+      user.firstName,
+      user.lastName,
+    ].where((p) => p != null && p.isNotEmpty).join(' ');
+    return name.isEmpty ? null : name;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.skyColors;
@@ -45,7 +54,7 @@ class _AppDrawerState extends State<AppDrawer> {
           const SkyLogo(showTagline: false, markSize: 32),
           if (user != null) ...[
             const SizedBox(height: SkySpacing.md),
-            Text(user.username, style: typography.title),
+            Text(_displayName(user) ?? user.username, style: typography.title),
             Text(
               user.email,
               style: typography.caption.copyWith(color: colors.subtle),
@@ -78,10 +87,11 @@ class _AppDrawerState extends State<AppDrawer> {
           label: 'Pendientes',
           enabled: false,
         ),
-        const SkyDrawerItem(
+        SkyDrawerItem(
           icon: SkyIconType.user,
           label: 'Mi perfil',
-          enabled: false,
+          selected: widget.currentRoute == AppRoutes.profile,
+          onTap: () => _go(AppRoutes.profile),
         ),
       ],
       footer: [

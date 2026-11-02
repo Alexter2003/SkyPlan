@@ -1,3 +1,4 @@
+import '../../domain/entities/account_profile.dart';
 import '../../domain/entities/auth_user.dart';
 import '../../domain/entities/session.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -45,4 +46,25 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout({required String token}) {
     return _remote.logout(token: token);
   }
+
+  @override
+  Future<void> forgotPassword({required String email}) {
+    return _remote.forgotPassword(email: email);
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) {
+    return _remote.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      confirmNewPassword: confirmNewPassword,
+    );
+  }
+
+  @override
+  Future<AccountProfile> getProfile() => _remote.getProfile();
 }

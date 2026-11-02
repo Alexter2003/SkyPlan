@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/design_system/design_system.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../state/session_controller.dart';
+import 'change_password_screen.dart';
 import 'login_screen.dart';
 
 /// Decide entre Home o Login según haya sesión guardada.
@@ -28,6 +29,7 @@ class _AuthGateState extends State<AuthGate> {
     return switch (status) {
       SessionStatus.unknown => const _SplashLoader(),
       SessionStatus.authenticated => const HomeScreen(),
+      SessionStatus.passwordChangeRequired => const ChangePasswordScreen(),
       SessionStatus.unauthenticated => const LoginScreen(),
     };
   }

@@ -44,7 +44,7 @@ void main() {
     expect(find.text('Inicio'), findsOneWidget);
     expect(find.text('Mis ubicaciones'), findsOneWidget);
     expect(find.text('Actividades'), findsOneWidget);
-    expect(find.text('Pronto'), findsNWidgets(2));
+    expect(find.text('Pronto'), findsOneWidget);
   });
 
   testWidgets('navigates to Mis ubicaciones', (tester) async {
@@ -54,6 +54,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('route:locations'), findsOneWidget);
+  });
+
+  testWidgets('navigates to Mi perfil', (tester) async {
+    await _openDrawer(tester, AppRoutes.home);
+
+    await tester.tap(find.text('Mi perfil'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('route:profile'), findsOneWidget);
   });
 
   testWidgets('tapping the current section only closes the drawer', (

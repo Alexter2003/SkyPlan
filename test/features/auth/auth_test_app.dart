@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:sky_plan/core/design_system/theme/sky_theme.dart';
 import 'package:sky_plan/core/storage/session_storage.dart';
 import 'package:sky_plan/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sky_plan/features/auth/domain/usecases/change_password.dart';
 import 'package:sky_plan/features/auth/domain/usecases/confirm_email.dart';
+import 'package:sky_plan/features/auth/domain/usecases/forgot_password.dart';
+import 'package:sky_plan/features/auth/domain/usecases/get_account_profile.dart';
 import 'package:sky_plan/features/auth/domain/usecases/login.dart';
 import 'package:sky_plan/features/auth/domain/usecases/logout.dart';
 import 'package:sky_plan/features/auth/domain/usecases/register_user.dart';
@@ -38,6 +41,7 @@ Widget buildAuthTestApp({
   required AuthRepository repository,
   required Widget child,
   String initialRoute = '/',
+  SessionStorage? storage,
 }) {
   return MultiProvider(
     providers: [
@@ -47,10 +51,14 @@ Widget buildAuthTestApp({
       Provider<ResendConfirmation>(create: (c) => ResendConfirmation(c.read())),
       Provider<Login>(create: (c) => Login(c.read())),
       Provider<Logout>(create: (c) => Logout(c.read())),
+      Provider<ForgotPassword>(create: (c) => ForgotPassword(c.read())),
+      Provider<ChangePassword>(create: (c) => ChangePassword(c.read())),
+      Provider<GetAccountProfile>(create: (c) => GetAccountProfile(c.read())),
       ChangeNotifierProvider<SessionController>(
         create: (c) => SessionController(
-          storage: InMemorySessionStorage(),
+          storage: storage ?? InMemorySessionStorage(),
           logout: c.read(),
+          getProfile: c.read(),
         ),
       ),
     ],
@@ -62,6 +70,8 @@ Widget buildAuthTestApp({
         '/login': (_) => const _RouteMarker('login'),
         '/register': (_) => const _RouteMarker('register'),
         '/home': (_) => const _RouteMarker('home'),
+        '/forgot-password': (_) => const _RouteMarker('forgot-password'),
+        '/change-password': (_) => const _RouteMarker('change-password'),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/confirm-email') {
