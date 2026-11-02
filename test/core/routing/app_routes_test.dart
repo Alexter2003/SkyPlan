@@ -43,6 +43,7 @@ void main() {
   test('recovery and profile routes resolve', () {
     for (final name in [
       AppRoutes.profile,
+      AppRoutes.pending,
       AppRoutes.changePassword,
       AppRoutes.forgotPassword,
     ]) {

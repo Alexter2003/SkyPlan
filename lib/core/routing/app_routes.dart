@@ -15,6 +15,7 @@ import '../../features/locations/domain/entities/visit.dart';
 import '../../features/locations/presentation/screens/location_form_screen.dart';
 import '../../features/locations/presentation/screens/locations_screen.dart';
 import '../../features/locations/presentation/screens/map_picker_screen.dart';
+import '../../features/pending/presentation/screens/pending_activities_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../design_system/components/motion/sky_page_route.dart';
 
@@ -65,6 +66,7 @@ abstract final class AppRoutes {
   static const changePassword = '/change-password';
   static const home = '/home';
   static const profile = '/profile';
+  static const pending = '/pending';
   static const locations = '/locations';
   static const locationForm = '/locations/form';
   static const mapPicker = '/locations/map';
@@ -108,6 +110,11 @@ abstract final class AppRoutes {
         return SkyPageRoute(
           settings: settings,
           builder: (_) => const HomeScreen(),
+        );
+      case pending:
+        return SkyPageRoute(
+          settings: settings,
+          builder: (_) => const PendingActivitiesScreen(),
         );
       case profile:
         return SkyPageRoute(
