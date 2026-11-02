@@ -8,11 +8,16 @@ import '../data/repositories/activities_repository_impl.dart';
 import '../data/repositories/weather_conditions_repository_impl.dart';
 import '../domain/repositories/activities_repository.dart';
 import '../domain/repositories/weather_conditions_repository.dart';
+import '../domain/usecases/cancel_activity.dart';
+import '../domain/usecases/complete_activity.dart';
 import '../domain/usecases/create_activity.dart';
 import '../domain/usecases/delete_activity.dart';
 import '../domain/usecases/get_activities_by_visit.dart';
 import '../domain/usecases/get_activities_grouped_by_visit.dart';
 import '../domain/usecases/get_weather_conditions.dart';
+import '../domain/usecases/reactivate_activity.dart';
+import '../domain/usecases/reschedule_activity.dart';
+import '../domain/usecases/uncomplete_activity.dart';
 import '../domain/usecases/update_activity.dart';
 
 /// Providers del módulo activities, compuestos por `core/di/app_providers.dart`.
@@ -49,5 +54,23 @@ final activitiesProviders = [
   Provider<GetWeatherConditions>(
     create: (context) =>
         GetWeatherConditions(context.read<WeatherConditionsRepository>()),
+  ),
+  Provider<CompleteActivity>(
+    create: (context) => CompleteActivity(context.read<ActivitiesRepository>()),
+  ),
+  Provider<UncompleteActivity>(
+    create: (context) =>
+        UncompleteActivity(context.read<ActivitiesRepository>()),
+  ),
+  Provider<CancelActivity>(
+    create: (context) => CancelActivity(context.read<ActivitiesRepository>()),
+  ),
+  Provider<ReactivateActivity>(
+    create: (context) =>
+        ReactivateActivity(context.read<ActivitiesRepository>()),
+  ),
+  Provider<RescheduleActivity>(
+    create: (context) =>
+        RescheduleActivity(context.read<ActivitiesRepository>()),
   ),
 ];

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/design_system/design_system.dart';
 import '../../domain/entities/activity.dart';
+import '../../domain/services/activity_operations.dart';
 import 'weather_condition_labels.dart';
 
 enum ActivityAction { edit, delete }
@@ -13,11 +14,15 @@ class ActivityCard extends StatelessWidget {
     required this.activity,
     required this.busy,
     required this.onAction,
+    this.onToggleComplete,
   });
 
   final Activity activity;
   final bool busy;
   final ValueChanged<ActivityAction> onAction;
+
+  /// Si se da, la tarjeta muestra el checkbox del checklist.
+  final VoidCallback? onToggleComplete;
 
   Future<void> _openMenu(BuildContext context) async {
     final action = await SkyBottomSheet.show<ActivityAction>(
@@ -64,10 +69,31 @@ class ActivityCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (onToggleComplete != null &&
+                  canToggleComplete(activity.state) &&
+                  !busy)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: SkySpacing.xxs,
+                    right: SkySpacing.xs,
+                  ),
+                  child: SkyCheckbox(
+                    key: const ValueKey('complete-checkbox'),
+                    value: activity.state == ActivityState.completed,
+                    onChanged: (_) => onToggleComplete!(),
+                  ),
+                ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: SkySpacing.xs),
-                  child: Text(activity.name, style: typography.title),
+                  child: Text(
+                    activity.name,
+                    style: typography.title.copyWith(
+                      decoration: activity.state == ActivityState.completed
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
                 ),
               ),
               if (busy)
@@ -146,9 +172,11 @@ class ActivityCard extends StatelessWidget {
           background: colors.statusApt.background,
           foreground: colors.statusApt.foreground,
         ),
-      if (activity.state == ActivityState.cancelled)
+      if (activity.isCancelled)
         SkyBadge(
-          label: 'Cancelada',
+          label: activity.state == ActivityState.cancelledBySystem
+              ? 'Cancelada por el clima'
+              : 'Cancelada',
           background: colors.statusPostpone.background,
           foreground: colors.statusPostpone.foreground,
         ),
