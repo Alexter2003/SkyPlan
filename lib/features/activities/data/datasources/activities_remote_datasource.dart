@@ -1,5 +1,7 @@
 import '../../../../core/network/api_client.dart';
+import '../../../locations/data/models/visit_model.dart';
 import '../../domain/entities/activity.dart';
+import '../../domain/entities/activity_action_result.dart';
 import '../../domain/entities/time_of_day_value.dart';
 import '../models/activity_model.dart';
 
@@ -61,4 +63,50 @@ class ActivitiesRemoteDataSource {
   }
 
   Future<void> delete(int id) => _client.deleteJson('/activities/$id');
+
+  Future<ActivityActionResult> complete(int id) =>
+      _action('/activities/$id/complete', const {});
+
+  Future<ActivityActionResult> uncomplete(int id) =>
+      _action('/activities/$id/uncomplete', const {});
+
+  Future<ActivityActionResult> cancel(int id, {String? reason}) =>
+      _action('/activities/$id/cancel', {'reason': ?reason});
+
+  Future<ActivityModel> reactivate(int id) async {
+    final envelope = await _client.patchJson(
+      '/activities/$id/reactivate',
+      const {},
+    );
+    return ActivityModel.fromJson(envelope.dataObject);
+  }
+
+  Future<ActivityModel> reschedule(
+    int id, {
+    required DateTime date,
+    required TimeOfDayValue startTime,
+    required TimeOfDayValue endTime,
+  }) async {
+    final envelope = await _client.patchJson('/activities/$id/reschedule', {
+      'date': VisitModel.formatApiDate(date),
+      'startTime': startTime.format(),
+      'endTime': endTime.format(),
+    });
+    return ActivityModel.fromJson(envelope.dataObject);
+  }
+
+  Future<ActivityActionResult> _action(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
+    final envelope = await _client.patchJson(path, body);
+    final data = envelope.dataObject;
+    final visitStatus = data['visitStatus'];
+    return ActivityActionResult(
+      activity: ActivityModel.fromJson(data),
+      visitStatus: visitStatus is String
+          ? VisitModel.parseStatus(visitStatus)
+          : null,
+    );
+  }
 }

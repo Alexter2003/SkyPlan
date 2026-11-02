@@ -82,10 +82,11 @@ class _AppDrawerState extends State<AppDrawer> {
           selected: widget.currentRoute == AppRoutes.activities,
           onTap: () => _go(AppRoutes.activities),
         ),
-        const SkyDrawerItem(
+        SkyDrawerItem(
           icon: SkyIconType.clock,
           label: 'Pendientes',
-          enabled: false,
+          selected: widget.currentRoute == AppRoutes.pending,
+          onTap: () => _go(AppRoutes.pending),
         ),
         SkyDrawerItem(
           icon: SkyIconType.user,

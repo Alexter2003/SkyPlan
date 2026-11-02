@@ -126,20 +126,13 @@ exported from the single barrel `lib/core/design_system/design_system.dart`
 | Icons | `SkyIcon(SkyIconType.x)` | Stroke-based, 24px grid, own painter — **never** `Icons.*` (Material) or emoji for app UI. Add a new `SkyIconType` case instead of falling back to Material icons |
 | Logo | `SkyLogoMark`, `SkyLogo` (mark + wordmark) | Requirement 1.c — reuse this, don't redraw the mark per screen |
 
-`gallery/kit_gallery_screen.dart` (`KitGalleryScreen`) renders every
-component in every state/variant with a light/dark toggle. It's wired at
-route `/kit`, registered only `if (kDebugMode)` in `main.dart` — open it to
-see current component states before building a new screen, and add any new
-component there when you add it to the kit.
-
 ## 6. Building a new screen
 
 1. Wrap it in `SkyScaffold`, not `Scaffold` (unless there's a specific
    reason not to — note that reason in the PR).
 2. Compose it from kit components first. If the exact piece you need isn't
-   in section 5, check `/kit` to confirm, then add it to the kit
-   (`components/<category>/`, export from `design_system.dart`, add to the
-   gallery) rather than building a one-off styled widget inside the
+   in section 5, add it to the kit
+   (`components/<category>/`, export from `design_system.dart`) rather than building a one-off styled widget inside the
    feature's `presentation/` folder — the point of the kit is that no
    feature reinvents its own button/input/card.
 3. Spacing between elements: `SizedBox(height: SkySpacing.md)` etc., not

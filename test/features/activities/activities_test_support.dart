@@ -3,15 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:sky_plan/core/design_system/theme/sky_theme.dart';
 import 'package:sky_plan/core/design_system/theme/sky_theme_context.dart';
 import 'package:sky_plan/features/activities/domain/entities/activity.dart';
+import 'package:sky_plan/features/activities/domain/entities/activity_action_result.dart';
+import 'package:sky_plan/features/locations/domain/entities/visit.dart';
 import 'package:sky_plan/features/activities/domain/entities/time_of_day_value.dart';
 import 'package:sky_plan/features/activities/domain/entities/weather_condition.dart';
 import 'package:sky_plan/features/activities/domain/repositories/activities_repository.dart';
 import 'package:sky_plan/features/activities/domain/repositories/weather_conditions_repository.dart';
+import 'package:sky_plan/features/activities/domain/usecases/complete_activity.dart';
 import 'package:sky_plan/features/activities/domain/usecases/create_activity.dart';
 import 'package:sky_plan/features/activities/domain/usecases/delete_activity.dart';
 import 'package:sky_plan/features/activities/domain/usecases/get_activities_by_visit.dart';
 import 'package:sky_plan/features/activities/domain/usecases/get_activities_grouped_by_visit.dart';
 import 'package:sky_plan/features/activities/domain/usecases/get_weather_conditions.dart';
+import 'package:sky_plan/features/activities/domain/usecases/uncomplete_activity.dart';
 import 'package:sky_plan/features/activities/domain/usecases/update_activity.dart';
 import 'package:sky_plan/features/auth/domain/usecases/logout.dart';
 import 'package:sky_plan/features/auth/presentation/state/session_controller.dart';
@@ -36,6 +40,9 @@ Activity makeActivity({
   ActivityState state = ActivityState.planned,
   bool? isViable = true,
   List<int> conditionIds = const [1],
+  int? probability,
+  ProbabilityBand? band,
+  String? cancelReason,
 }) {
   return Activity(
     id: id,
@@ -48,6 +55,9 @@ Activity makeActivity({
     type: type,
     state: state,
     isViable: isViable,
+    probability: probability,
+    probabilityBand: band,
+    cancelReason: cancelReason,
     conditions: [
       for (final c in conditionIds) ActivityCondition(id: c, name: 'c$c'),
     ],
@@ -70,6 +80,93 @@ class FakeActivitiesRepository implements ActivitiesRepository {
   final List<Map<String, Object?>> created = [];
   final List<Map<String, Object?>> updated = [];
   final List<int> deletedIds = [];
+  final List<String> actions = [];
+
+  /// `visitStatus` que devuelven complete/uncomplete/cancel.
+  VisitStatus? nextVisitStatus;
+  final List<Map<String, Object?>> rescheduled = [];
+
+  Activity _replace(int id, Activity Function(Activity) change) {
+    final index = activities.indexWhere((a) => a.id == id);
+    final base = index >= 0 ? activities[index] : makeActivity(id: id);
+    final next = change(base);
+    if (index >= 0) activities[index] = next;
+    return next;
+  }
+
+  Activity _copy(Activity a, {ActivityState? state, String? cancelReason}) =>
+      Activity(
+        id: a.id,
+        visitId: a.visitId,
+        name: a.name,
+        description: a.description,
+        date: a.date,
+        startTime: a.startTime,
+        endTime: a.endTime,
+        type: a.type,
+        state: state ?? a.state,
+        conditions: a.conditions,
+        isViable: a.isViable,
+        probability: a.probability,
+        probabilityBand: a.probabilityBand,
+        cancelReason: cancelReason ?? a.cancelReason,
+      );
+
+  @override
+  Future<ActivityActionResult> complete(int id) async {
+    if (error != null) throw error!;
+    actions.add('complete:$id');
+    return ActivityActionResult(
+      activity: _replace(id, (a) => _copy(a, state: ActivityState.completed)),
+      visitStatus: nextVisitStatus,
+    );
+  }
+
+  @override
+  Future<ActivityActionResult> uncomplete(int id) async {
+    if (error != null) throw error!;
+    actions.add('uncomplete:$id');
+    return ActivityActionResult(
+      activity: _replace(id, (a) => _copy(a, state: ActivityState.planned)),
+      visitStatus: nextVisitStatus,
+    );
+  }
+
+  @override
+  Future<ActivityActionResult> cancel(int id, {String? reason}) async {
+    if (error != null) throw error!;
+    actions.add('cancel:$id:${reason ?? ''}');
+    return ActivityActionResult(
+      activity: _replace(
+        id,
+        (a) => _copy(a, state: ActivityState.cancelled, cancelReason: reason),
+      ),
+    );
+  }
+
+  @override
+  Future<Activity> reactivate(int id) async {
+    if (error != null) throw error!;
+    actions.add('reactivate:$id');
+    return _replace(id, (a) => _copy(a, state: ActivityState.planned));
+  }
+
+  @override
+  Future<Activity> reschedule(
+    int id, {
+    required DateTime date,
+    required TimeOfDayValue startTime,
+    required TimeOfDayValue endTime,
+  }) async {
+    if (error != null) throw error!;
+    rescheduled.add({
+      'id': id,
+      'date': date,
+      'startTime': startTime,
+      'endTime': endTime,
+    });
+    return _replace(id, (a) => _copy(a, state: ActivityState.planned));
+  }
 
   @override
   Future<List<Activity>> getByVisit(int visitId) async {
@@ -161,6 +258,10 @@ Widget buildActivitiesTestApp({
         Provider<CreateActivity>(create: (c) => CreateActivity(c.read())),
         Provider<UpdateActivity>(create: (c) => UpdateActivity(c.read())),
         Provider<DeleteActivity>(create: (c) => DeleteActivity(c.read())),
+        Provider<CompleteActivity>(create: (c) => CompleteActivity(c.read())),
+        Provider<UncompleteActivity>(
+          create: (c) => UncompleteActivity(c.read()),
+        ),
         Provider<GetWeatherConditions>(
           create: (c) => GetWeatherConditions(c.read()),
         ),

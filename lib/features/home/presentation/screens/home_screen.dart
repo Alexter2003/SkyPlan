@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -161,20 +160,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Spacer(),
-              if (kDebugMode)
-                SkyFadeSlideIn(
-                  delay: const Duration(milliseconds: 220),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: SkySpacing.sm),
-                    child: SkyButton(
-                      label: 'Ver UI kit',
-                      variant: SkyButtonVariant.ghost,
-                      expand: true,
-                      onPressed: () => Navigator.of(context).pushNamed('/kit'),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

@@ -240,8 +240,17 @@ class _ActivityFormViewState extends State<_ActivityFormView> {
                             style: typography.title,
                           ),
                           const SizedBox(height: SkySpacing.xs),
+                          if (controller.forecastConditions != null) ...[
+                            Text(
+                              'Solo se muestran las condiciones que cumple el pronóstico de esta ubicación.',
+                              style: typography.caption.copyWith(
+                                color: colors.subtle,
+                              ),
+                            ),
+                            const SizedBox(height: SkySpacing.xs),
+                          ],
                           WeatherConditionSelector(
-                            catalog: controller.catalog,
+                            catalog: controller.availableCatalog,
                             selected: controller.selectedConditions,
                             onChanged: controller.setConditions,
                             errorText: controller.conditionsError,

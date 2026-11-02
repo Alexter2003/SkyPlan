@@ -1,4 +1,5 @@
 import '../../domain/entities/activity.dart';
+import '../../domain/entities/activity_action_result.dart';
 import '../../domain/entities/time_of_day_value.dart';
 import '../../domain/repositories/activities_repository.dart';
 import '../datasources/activities_remote_datasource.dart';
@@ -51,4 +52,30 @@ class ActivitiesRepositoryImpl implements ActivitiesRepository {
 
   @override
   Future<void> delete(int id) => _remote.delete(id);
+
+  @override
+  Future<ActivityActionResult> complete(int id) => _remote.complete(id);
+
+  @override
+  Future<ActivityActionResult> uncomplete(int id) => _remote.uncomplete(id);
+
+  @override
+  Future<ActivityActionResult> cancel(int id, {String? reason}) =>
+      _remote.cancel(id, reason: reason);
+
+  @override
+  Future<Activity> reactivate(int id) => _remote.reactivate(id);
+
+  @override
+  Future<Activity> reschedule(
+    int id, {
+    required DateTime date,
+    required TimeOfDayValue startTime,
+    required TimeOfDayValue endTime,
+  }) => _remote.reschedule(
+    id,
+    date: date,
+    startTime: startTime,
+    endTime: endTime,
+  );
 }

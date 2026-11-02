@@ -17,7 +17,7 @@ Activity? findOverlap({
 }) {
   for (final other in existing) {
     if (other.id == excludeId) continue;
-    if (other.state == ActivityState.cancelled) continue;
+    if (other.isCancelled) continue;
     if (start.isBefore(other.endTime) && other.startTime.isBefore(end)) {
       return other;
     }

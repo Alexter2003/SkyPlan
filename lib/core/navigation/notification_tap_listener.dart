@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../features/notifications/presentation/state/notifications_controller.dart';
 import '../routing/app_routes.dart';
 
-/// Lleva a Actividades cuando el usuario toca una notificación del SO y
+/// Lleva a Pendientes (donde se reactiva o reagenda) cuando el usuario toca una notificación del SO y
 /// recupera los avisos pendientes al volver la app a primer plano.
 class NotificationTapListener extends StatefulWidget {
   const NotificationTapListener({
@@ -50,7 +50,7 @@ class _NotificationTapListenerState extends State<NotificationTapListener>
 
   void _open() {
     widget.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-      AppRoutes.activities,
+      AppRoutes.pending,
       (route) => route.isFirst,
     );
   }

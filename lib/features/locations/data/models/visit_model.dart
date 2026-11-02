@@ -22,7 +22,7 @@ class VisitModel extends Visit {
         longitude: (json['longitude'] as num).toDouble(),
       ),
       date: parseApiDate(json['date'] as String),
-      status: _parseStatus(json['status'] as String),
+      status: parseStatus(json['status'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
       weather: _parseWeather(json),
     );
@@ -41,7 +41,7 @@ class VisitModel extends Visit {
     return '${date.year}-$m-$d';
   }
 
-  static VisitStatus _parseStatus(String value) => switch (value) {
+  static VisitStatus parseStatus(String value) => switch (value) {
     'COMPLETED' => VisitStatus.completed,
     'CANCELLED' => VisitStatus.cancelled,
     _ => VisitStatus.planned,

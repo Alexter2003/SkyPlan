@@ -69,4 +69,88 @@ void main() {
 
     expect(model.conflictsWith, {2, 3});
   });
+
+  group('state and probability parsing', () {
+    Map<String, dynamic> json(
+      String state, {
+      Object? probability,
+      Object? band,
+    }) => {
+      'id': 1,
+      'visitId': 1,
+      'name': 'x',
+      'description': '',
+      'date': '2026-10-05',
+      'startTime': '09:00',
+      'endTime': '10:00',
+      'type': 'OUTDOOR',
+      'state': {'id': 1, 'name': state},
+      'probability': probability,
+      'probabilityBand': band,
+      'weatherConditions': <dynamic>[],
+    };
+
+    test('maps each of the four API states', () {
+      expect(
+        ActivityModel.fromJson(json('planned')).state,
+        ActivityState.planned,
+      );
+      expect(
+        ActivityModel.fromJson(json('completed')).state,
+        ActivityState.completed,
+      );
+      expect(
+        ActivityModel.fromJson(json('cancelled')).state,
+        ActivityState.cancelled,
+      );
+      expect(
+        ActivityModel.fromJson(json('cancelled_by_system')).state,
+        ActivityState.cancelledBySystem,
+      );
+    });
+
+    test('a system cancellation is cancelled but not planned', () {
+      final activity = ActivityModel.fromJson(json('cancelled_by_system'));
+
+      expect(activity.isCancelled, isTrue);
+      expect(activity.isEditable, isFalse);
+    });
+
+    test('parses probability and the traffic-light band', () {
+      final green = ActivityModel.fromJson(
+        json('planned', probability: 80, band: 'GREEN'),
+      );
+      final yellow = ActivityModel.fromJson(
+        json('planned', probability: 55, band: 'YELLOW'),
+      );
+      final red = ActivityModel.fromJson(
+        json('planned', probability: 10, band: 'RED'),
+      );
+
+      expect(green.probability, 80);
+      expect(green.probabilityBand, ProbabilityBand.green);
+      expect(yellow.probabilityBand, ProbabilityBand.yellow);
+      expect(red.probabilityBand, ProbabilityBand.red);
+    });
+
+    test('null probability stays null, never invented', () {
+      final activity = ActivityModel.fromJson(json('planned'));
+
+      expect(activity.probability, isNull);
+      expect(activity.probabilityBand, isNull);
+    });
+
+    test('parses cancellation reason and timestamps', () {
+      final activity = ActivityModel.fromJson({
+        ...json('cancelled_by_system'),
+        'cancelReason': 'Cancelada automáticamente',
+        'cancelledAt': '2026-11-03T20:45:00.000Z',
+        'completedAt': null,
+      });
+
+      expect(activity.cancelReason, 'Cancelada automáticamente');
+      expect(activity.cancelledAt, DateTime.utc(2026, 11, 3, 20, 45));
+      expect(activity.completedAt, isNull);
+    });
+  });
 }

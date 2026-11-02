@@ -147,4 +147,29 @@ void main() {
     expect(fromRest.id, 9);
     expect(fromRest.type, ViabilityNotificationType.notViable);
   });
+
+  test('parses the system auto-cancellation type', () {
+    final notification = ViabilityNotificationModel.fromJson({
+      'notificationId': 12,
+      'activityId': 5,
+      'visitId': 10,
+      'type': 'ACTIVITY_AUTO_CANCELLED',
+      'title': 'Actividad cancelada automáticamente',
+      'message': "La actividad 'Caminata' se canceló automáticamente",
+      'createdAt': '2026-11-03T20:45:00.000Z',
+    });
+
+    expect(notification.type, ViabilityNotificationType.autoCancelled);
+  });
+
+  test('unknown types fall back to notViable', () {
+    expect(
+      ViabilityNotificationModel.parseType('SOMETHING_NEW'),
+      ViabilityNotificationType.notViable,
+    );
+    expect(
+      ViabilityNotificationModel.parseType(null),
+      ViabilityNotificationType.notViable,
+    );
+  });
 }

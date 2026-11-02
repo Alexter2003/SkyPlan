@@ -7,12 +7,15 @@ import '../../../locations/domain/entities/visit.dart';
 import '../../../notifications/presentation/state/notifications_controller.dart';
 import '../../../locations/presentation/widgets/date_format.dart';
 import '../../domain/entities/activity.dart';
+import '../../domain/usecases/complete_activity.dart';
 import '../../domain/usecases/delete_activity.dart';
 import '../../domain/usecases/get_activities_by_visit.dart';
+import '../../domain/usecases/uncomplete_activity.dart';
 import '../state/visit_activities_controller.dart';
 import '../widgets/activity_card.dart';
 import '../widgets/activity_delete_confirm.dart';
 import '../widgets/activity_messages.dart';
+import '../widgets/checklist_progress.dart';
 
 /// Actividades de una ubicación.
 class VisitActivitiesScreen extends StatelessWidget {
@@ -27,6 +30,9 @@ class VisitActivitiesScreen extends StatelessWidget {
         visitId: visit.id,
         getActivities: context.read<GetActivitiesByVisit>(),
         deleteActivity: context.read<DeleteActivity>(),
+        completeActivity: context.read<CompleteActivity>(),
+        uncompleteActivity: context.read<UncompleteActivity>(),
+        visitStatus: visit.status,
       )..load(),
       child: _VisitActivitiesView(visit: visit),
     );
@@ -110,6 +116,14 @@ class _VisitActivitiesViewState extends State<_VisitActivitiesView>
     }
   }
 
+  Future<void> _toggle(Activity activity) async {
+    final error = await context
+        .read<VisitActivitiesController>()
+        .toggleComplete(activity);
+    if (error == null || !mounted) return;
+    SkySnackbar.show(context, error, tone: SkySnackbarTone.error);
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<VisitActivitiesController>();
@@ -141,9 +155,19 @@ class _VisitActivitiesViewState extends State<_VisitActivitiesView>
               ),
             ],
           ),
+          const SizedBox(height: SkySpacing.sm),
+          ChecklistProgress(
+            done: controller.checklistDone,
+            total: controller.checklistTotal,
+            visitFinished: controller.visitStatus == VisitStatus.completed,
+          ),
           const SizedBox(height: SkySpacing.md),
           Expanded(
-            child: _Body(onAction: _handle, onCreate: _openForm),
+            child: _Body(
+              onAction: _handle,
+              onCreate: _openForm,
+              onToggle: _toggle,
+            ),
           ),
           const SizedBox(height: SkySpacing.sm),
           SkyButton(
@@ -161,10 +185,15 @@ class _VisitActivitiesViewState extends State<_VisitActivitiesView>
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.onAction, required this.onCreate});
+  const _Body({
+    required this.onAction,
+    required this.onCreate,
+    required this.onToggle,
+  });
 
   final Future<void> Function(Activity, ActivityAction) onAction;
   final Future<void> Function({Activity? activity}) onCreate;
+  final Future<void> Function(Activity) onToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +240,7 @@ class _Body extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => controller.load(silent: true),
       child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: controller.activities.length,
         separatorBuilder: (_, _) => const SizedBox(height: SkySpacing.sm),
         itemBuilder: (context, index) {
@@ -222,6 +252,7 @@ class _Body extends StatelessWidget {
               activity: activity,
               busy: controller.busyIds.contains(activity.id),
               onAction: (action) => onAction(activity, action),
+              onToggleComplete: () => onToggle(activity),
             ),
           );
         },

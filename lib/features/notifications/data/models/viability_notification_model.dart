@@ -17,12 +17,16 @@ class ViabilityNotificationModel extends ViabilityNotification {
       id: (json['id'] ?? json['notificationId']) as int,
       activityId: json['activityId'] as int,
       visitId: json['visitId'] as int,
-      type: json['type'] == 'ACTIVITY_VIABLE_AGAIN'
-          ? ViabilityNotificationType.viableAgain
-          : ViabilityNotificationType.notViable,
+      type: parseType(json['type'] as String?),
       title: json['title'] as String,
       message: json['message'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
+
+  static ViabilityNotificationType parseType(String? value) => switch (value) {
+    'ACTIVITY_VIABLE_AGAIN' => ViabilityNotificationType.viableAgain,
+    'ACTIVITY_AUTO_CANCELLED' => ViabilityNotificationType.autoCancelled,
+    _ => ViabilityNotificationType.notViable,
+  };
 }

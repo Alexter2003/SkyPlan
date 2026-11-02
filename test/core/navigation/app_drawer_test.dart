@@ -38,13 +38,15 @@ Future<void> _openDrawer(WidgetTester tester, String currentRoute) async {
 }
 
 void main() {
-  testWidgets('shows sections, with unfinished ones disabled', (tester) async {
+  testWidgets('shows every section, none disabled', (tester) async {
     await _openDrawer(tester, AppRoutes.home);
 
     expect(find.text('Inicio'), findsOneWidget);
     expect(find.text('Mis ubicaciones'), findsOneWidget);
     expect(find.text('Actividades'), findsOneWidget);
-    expect(find.text('Pronto'), findsOneWidget);
+    expect(find.text('Pendientes'), findsOneWidget);
+    expect(find.text('Mi perfil'), findsOneWidget);
+    expect(find.text('Pronto'), findsNothing);
   });
 
   testWidgets('navigates to Mis ubicaciones', (tester) async {
@@ -54,6 +56,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('route:locations'), findsOneWidget);
+  });
+
+  testWidgets('navigates to Pendientes', (tester) async {
+    await _openDrawer(tester, AppRoutes.home);
+
+    await tester.tap(find.text('Pendientes'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('route:pending'), findsOneWidget);
   });
 
   testWidgets('navigates to Mi perfil', (tester) async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 
 import '../../domain/entities/geo_point.dart';
@@ -23,13 +25,22 @@ class DeviceLocationDataSource {
       throw const GpsPermissionDeniedException();
     }
 
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 15),
-      ),
-    );
-    return GeoPoint(latitude: position.latitude, longitude: position.longitude);
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
+      );
+      return GeoPoint(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+    } on TimeoutException {
+      final last = await Geolocator.getLastKnownPosition();
+      if (last == null) rethrow;
+      return GeoPoint(latitude: last.latitude, longitude: last.longitude);
+    }
   }
 
   Future<void> openLocationSettings() => Geolocator.openLocationSettings();

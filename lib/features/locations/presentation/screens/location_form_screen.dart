@@ -59,7 +59,7 @@ class _LocationFormViewState extends State<_LocationFormView> {
     final point = await Navigator.of(context).pushNamed<GeoPoint>(
       AppRoutes.mapPicker,
       arguments: MapPickerArgs(
-        initial: controller.isEditing ? controller.point : null,
+        initial: controller.point,
       ),
     );
     if (point != null) controller.setPoint(point);

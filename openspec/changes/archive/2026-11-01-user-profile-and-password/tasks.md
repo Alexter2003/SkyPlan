@@ -25,4 +25,4 @@
 
 ## 5. Integration
 
-- [ ] 5.1 Run `flutter analyze` and `flutter test`; manually verify the end-to-end recovery flow against the backend (forgot → email → login → forced change → home) and that all acceptance criteria hold
+- [x] 5.1 Run `flutter analyze` and `flutter test`; manually verify the end-to-end recovery flow against the backend (forgot → email → login → forced change → home) and that all acceptance criteria hold
