@@ -99,4 +99,58 @@ void main() {
 
     expect(emissions, 0);
   });
+
+  test('uses PUT with a JSON body', () async {
+    late http.Request seen;
+    final client = ApiClient(
+      client: MockClient((request) async {
+        seen = request;
+        return _ok({});
+      }),
+    );
+
+    await client.putJson('/users/me', {'firstName': 'Ana'});
+
+    expect(seen.method, 'PUT');
+    expect(jsonDecode(seen.body), {'firstName': 'Ana'});
+  });
+
+  test('the pending-change 403 emits passwordChangeRequired', () async {
+    final client = ApiClient(
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'status': 403,
+            'message': 'Debes cambiar tu contraseña antes de continuar',
+          }),
+          403,
+        ),
+      ),
+    );
+
+    final emitted = expectLater(client.passwordChangeRequired, emits(anything));
+    await expectLater(
+      client.getJson('/visits'),
+      throwsA(isA<ApiException>().having((e) => e.status, 'status', 403)),
+    );
+    await emitted;
+  });
+
+  test('other 403 responses do not emit passwordChangeRequired', () async {
+    final client = ApiClient(
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({'status': 403, 'message': 'Tu cuenta está inactiva'}),
+          403,
+        ),
+      ),
+    );
+    var emissions = 0;
+    client.passwordChangeRequired.listen((_) => emissions++);
+
+    await expectLater(client.getJson('/visits'), throwsA(isA<ApiException>()));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(emissions, 0);
+  });
 }
