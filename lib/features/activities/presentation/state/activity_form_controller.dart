@@ -11,6 +11,7 @@ import '../../domain/entities/weather_condition.dart';
 import '../../domain/services/schedule_rules.dart';
 import '../../domain/usecases/create_activity.dart';
 import '../../domain/usecases/get_activities_by_visit.dart';
+import '../../../locations/domain/services/weather_classifier.dart';
 import '../../domain/usecases/get_weather_conditions.dart';
 import '../../domain/usecases/update_activity.dart';
 
@@ -70,6 +71,40 @@ class ActivityFormController extends ChangeNotifier {
 
   bool get isEditing => editing != null;
 
+  bool _conditionsTouched = false;
+
+  /// Condiciones que el pronóstico de la ubicación cumple (mismas reglas del
+  /// backend); `null` si no aplica (interior, edición o clima sin datos).
+  Set<String>? get forecastConditions {
+    final weather = visit?.weather;
+    if (isEditing || type != ActivityType.outdoor || weather == null) {
+      return null;
+    }
+    return classifyVisitWeather(weather);
+  }
+
+  /// Catálogo a mostrar: solo lo que el pronóstico permite, si se conoce.
+  List<WeatherCondition> get availableCatalog {
+    final forecast = forecastConditions;
+    if (forecast == null) return catalog;
+    return [
+      for (final c in catalog)
+        if (forecast.contains(c.name) || selectedConditions.contains(c.id)) c,
+    ];
+  }
+
+  void _syncConditionsWithForecast() {
+    final forecast = forecastConditions;
+    if (forecast == null) return;
+    final matching = {
+      for (final c in catalog)
+        if (forecast.contains(c.name)) c.id,
+    };
+    selectedConditions = _conditionsTouched
+        ? selectedConditions.intersection(matching)
+        : matching;
+  }
+
   Future<void> init() async {
     isLoadingCatalog = true;
     catalogError = null;
@@ -87,6 +122,7 @@ class ActivityFormController extends ChangeNotifier {
             preselected;
       }
       await _loadSiblings();
+      _syncConditionsWithForecast();
     } catch (e) {
       catalogError = errorMessageOf(e);
     } finally {
@@ -104,6 +140,7 @@ class ActivityFormController extends ChangeNotifier {
     visit = value;
     visitError = null;
     timeError = null;
+    _syncConditionsWithForecast();
     notifyListeners();
     try {
       await _loadSiblings();
@@ -117,6 +154,7 @@ class ActivityFormController extends ChangeNotifier {
   void setType(ActivityType value) {
     type = value;
     errorMessage = null;
+    _syncConditionsWithForecast();
     notifyListeners();
   }
 
@@ -134,6 +172,7 @@ class ActivityFormController extends ChangeNotifier {
 
   void setConditions(Set<int> value) {
     selectedConditions = value;
+    _conditionsTouched = true;
     conditionsError = null;
     errorMessage = null;
     notifyListeners();
